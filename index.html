@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#0F172A">
 <title>Absensi Charly.NET — Modern Attendance System</title>
+
 <!-- Google Fonts & Leaflet -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,8 +13,12 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <!-- Supabase JS SDK v2 -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- SweetAlert2 Library -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
 :root {
@@ -67,7 +72,6 @@ button { border: 0; cursor: pointer; }
   overflow-x: hidden;
 }
 
-/* INITIAL LOADING SCREEN */
 #appLoadingScreen {
   position: absolute;
   inset: 0;
@@ -91,7 +95,6 @@ button { border: 0; cursor: pointer; }
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* LOGIN SCREEN */
 .login-screen {
   display: flex;
   flex-direction: column;
@@ -101,18 +104,6 @@ button { border: 0; cursor: pointer; }
   background: radial-gradient(circle at top right, #1E293B, #0F172A);
   color: #fff;
   position: relative;
-}
-
-.login-screen::before {
-  content: '';
-  position: absolute;
-  top: -10%;
-  right: -10%;
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(circle, rgba(16,185,129,0.15) 0%, rgba(0,0,0,0) 70%);
-  border-radius: 50%;
-  pointer-events: none;
 }
 
 .login-header { text-align: center; margin-bottom: 36px; }
@@ -153,7 +144,6 @@ button { border: 0; cursor: pointer; }
   border-left: 3px solid var(--primary);
 }
 
-/* TOP HEADER */
 .header-bg {
   background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
   padding: 28px 24px 45px 24px;
@@ -197,7 +187,6 @@ button { border: 0; cursor: pointer; }
 
 .content { padding: 0 20px; margin-top: 16px; }
 
-/* CARDS & HERO */
 .card { 
   background: var(--surface); 
   border-radius: var(--radius-xl); 
@@ -256,7 +245,6 @@ button { border: 0; cursor: pointer; }
 .btn-go:active { transform: scale(0.98); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); }
 .btn-go:disabled { background: #CBD5E1; box-shadow: none; cursor: not-allowed; }
 
-/* STATS GRID */
 .grid-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
 .stat-box { 
   background: var(--surface); 
@@ -269,7 +257,6 @@ button { border: 0; cursor: pointer; }
 .stat-box b { font-size: 24px; font-weight: 800; display: block; color: var(--text-main); }
 .stat-box small { font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 
-/* LIST HISTORY & ADMIN */
 .section-title { font-size: 15px; font-weight: 800; margin: 20px 4px 12px; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; letter-spacing: -0.2px; }
 .row { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border-light); }
 .row:last-child { border: 0; }
@@ -288,7 +275,6 @@ button { border: 0; cursor: pointer; }
 .badge { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 8px; background: var(--primary-light); color: var(--primary-dark); }
 .badge.late { background: #FEF3C7; color: #D97706; }
 .badge.overtime { background: #F3E8FF; color: #7E22CE; }
-.badge.admin { background: #E0F2FE; color: #0369A1; }
 
 .input-group { margin-bottom: 14px; text-align: left; }
 .input-group label { font-size: 12px; font-weight: 700; display: block; margin-bottom: 6px; color: var(--text-main); }
@@ -301,11 +287,7 @@ button { border: 0; cursor: pointer; }
   color: var(--text-main);
   transition: border-color 0.2s;
 }
-.input-group input:focus, .input-group select:focus {
-  border-color: var(--primary);
-}
 
-/* BOTTOM NAV */
 .bottom-nav { 
   position: fixed; 
   bottom: 16px; 
@@ -336,7 +318,6 @@ button { border: 0; cursor: pointer; }
 .nav-item span { display: block; font-size: 18px; margin-bottom: 3px; }
 .nav-item.active { color: var(--primary-dark); background: var(--surface); box-shadow: var(--shadow-sm); }
 
-/* MODAL & BOTTOM SHEET */
 .modal { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); display: none; align-items: flex-end; justify-content: center; z-index: 200; backdrop-filter: blur(4px); }
 .modal.show { display: flex; }
 .sheet { 
@@ -354,7 +335,6 @@ button { border: 0; cursor: pointer; }
 .grab-bar { width: 40px; height: 5px; background: #E2E8F0; border-radius: 99px; margin: 0 auto 20px; }
 .sheet-title { font-size: 18px; font-weight: 800; margin-bottom: 16px; text-align: center; color: var(--text-main); }
 
-/* CAMERA & MAP UI */
 .camera-wrap { position: relative; width: 100%; border-radius: var(--radius-lg); overflow: hidden; background: #000; margin-bottom: 14px; box-shadow: var(--shadow-md); }
 .camera-wrap video { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; transform: scaleX(-1); }
 .camera-wrap canvas { display: none; }
@@ -370,38 +350,15 @@ button { border: 0; cursor: pointer; }
 .gps-status-dot.warn { background: var(--danger); }
 .gps-detail-text { margin-top: 6px; font-size: 12px; font-weight: 700; color: var(--text-muted); }
 
-/* CONFIRM MODAL */
 .confirm-photo { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: var(--radius-lg); margin-bottom: 14px; box-shadow: var(--shadow-md); }
 .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-light); font-size: 13px; }
 .info-row:last-child { border: 0; }
 .info-label { color: var(--text-muted); }
 .info-val { font-weight: 700; color: var(--text-main); }
 
-.toast { 
-  position: fixed; 
-  top: 24px; 
-  left: 50%; 
-  transform: translateX(-50%) translateY(-20px); 
-  background: #0F172A; 
-  color: #fff; 
-  padding: 12px 22px; 
-  border-radius: 30px; 
-  font-size: 13px; 
-  font-weight: 600; 
-  opacity: 0; 
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
-  z-index: 300; 
-  pointer-events: none; 
-  text-align: center; 
-  box-shadow: var(--shadow-lg);
-  border: 1px solid rgba(255,255,255,0.1);
-}
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
 .page { display: none; }
 .page.active { display: block; }
 
-/* ADMIN TAB SCROLLABLE */
 .admin-tabs {
   display: flex;
   gap: 8px;
@@ -423,23 +380,18 @@ button { border: 0; cursor: pointer; }
   white-space: nowrap;
   transition: all 0.2s;
 }
-.admin-tab-btn.active {
-  background: var(--text-main);
-  color: #fff;
-}
+.admin-tab-btn.active { background: var(--text-main); color: #fff; }
 </style>
 </head>
 <body>
 
 <div class="app">
 
-  <!-- SPLASH LOADING SCREEN -->
   <div id="appLoadingScreen">
     <div class="spinner"></div>
     <div style="font-size: 14px; font-weight: 600; color: #94A3B8;">Memuat Sesi Cloud...</div>
   </div>
 
-  <!-- LAYAR LOGIN USERNAME & PASSWORD -->
   <div id="loginScreen" class="login-screen" style="display: none;">
     <div class="login-header">
       <div class="logo-badge">⚡</div>
@@ -470,9 +422,7 @@ button { border: 0; cursor: pointer; }
     </div>
   </div>
 
-  <!-- APLIKASI UTAMA -->
   <div id="mainApp" style="display: none;">
-    <!-- TOP HEADER -->
     <div class="header-bg">
       <div class="top-bar">
         <div class="brand"><span class="brand-dot"></span> Charly<span>.NET</span></div>
@@ -484,7 +434,6 @@ button { border: 0; cursor: pointer; }
     </div>
 
     <div class="content">
-      <!-- HOME PAGE (PEKERJA / KARYAWAN) -->
       <main id="home" class="page active">
         <section class="card hero-card">
           <div>
@@ -494,7 +443,6 @@ button { border: 0; cursor: pointer; }
           </div>
         </section>
 
-        <!-- BASECAMP TERKUNCI ADMIN -->
         <div class="assigned-basecamp-badge">
           <div>
             <small style="color:var(--text-muted); font-size:10px; font-weight:700; text-transform:uppercase; display:block; letter-spacing: 0.5px;">Lokasi Presensi Anda:</small>
@@ -518,7 +466,6 @@ button { border: 0; cursor: pointer; }
         <section class="card" id="recent"></section>
       </main>
 
-      <!-- RIWAYAT PAGE -->
       <main id="history" class="page">
         <div class="section-title">
           <span>Semua Riwayat Saya</span>
@@ -527,7 +474,6 @@ button { border: 0; cursor: pointer; }
         <section class="card" id="historyList"></section>
       </main>
 
-      <!-- TAB DASHBOARD ADMIN -->
       <main id="adminDashboard" class="page">
         <div class="section-title">Rekap Monitoring Absensi Karyawan</div>
         <section class="card">
@@ -544,7 +490,6 @@ button { border: 0; cursor: pointer; }
         </section>
       </main>
 
-      <!-- PROFIL & LOGOUT PAGE -->
       <main id="profile" class="page">
         <div class="section-title">Profil & Sesi Log</div>
         <section class="card" style="text-align:center;">
@@ -559,7 +504,6 @@ button { border: 0; cursor: pointer; }
       </main>
     </div>
 
-    <!-- BOTTOM NAVIGATION -->
     <nav class="bottom-nav" id="mainNav">
       <button class="nav-item active" data-page="home"><span>🏠</span>Beranda</button>
       <button class="nav-item" data-page="history"><span>📋</span>Riwayat</button>
@@ -570,7 +514,8 @@ button { border: 0; cursor: pointer; }
 
 </div>
 
-<!-- MODAL ATTENDANCE (CAMERA & MAP) -->
+</div>
+
 <div class="modal" id="attendanceModal">
   <div class="sheet">
     <div class="grab-bar"></div>
@@ -601,7 +546,6 @@ button { border: 0; cursor: pointer; }
   </div>
 </div>
 
-<!-- MODAL CONFIRMATION -->
 <div class="modal" id="confirmModal">
   <div class="sheet">
     <div class="grab-bar"></div>
@@ -619,7 +563,6 @@ button { border: 0; cursor: pointer; }
   </div>
 </div>
 
-<!-- MODAL IZIN -->
 <div class="modal" id="modal">
   <div class="sheet">
     <div class="grab-bar"></div>
@@ -643,7 +586,6 @@ button { border: 0; cursor: pointer; }
   </div>
 </div>
 
-<!-- MODAL ADMIN PANEL -->
 <div class="modal" id="adminModal">
   <div class="sheet">
     <div class="grab-bar"></div>
@@ -656,7 +598,6 @@ button { border: 0; cursor: pointer; }
       <button class="admin-tab-btn" id="btnTabRecap" onclick="switchAdminTab('recap')">📊 Rekap Data</button>
     </div>
 
-    <!-- TAB SETTING JAM KERJA & LEMBUR -->
     <div id="tabShift">
       <form id="shiftSettingsForm" style="background: var(--surface-subtle); padding: 16px; border-radius: var(--radius-lg); margin-bottom: 12px; border: 1px solid var(--border-light);">
         <div style="font-weight: 800; margin-bottom: 12px; font-size: 13px;">⏰ Pengaturan Jam Kerja Usaha</div>
@@ -688,7 +629,6 @@ button { border: 0; cursor: pointer; }
       </form>
     </div>
 
-    <!-- TAB TAMBAH & KELOLA USER -->
     <div id="tabUsers" style="display: none;">
       <form id="addUserForm" style="background: var(--surface-subtle); padding: 16px; border-radius: var(--radius-lg); margin-bottom: 12px; border: 1px solid var(--border-light);">
         <div style="font-weight: 800; margin-bottom: 12px; font-size: 13px;">➕ Tambah Karyawan Baru</div>
@@ -722,7 +662,6 @@ button { border: 0; cursor: pointer; }
       <div id="adminUserList"></div>
     </div>
 
-    <!-- TAB TAMBAH & KELOLA BASECAMP -->
     <div id="tabOffices" style="display: none;">
       <form id="addOfficeForm" style="background: var(--surface-subtle); padding: 16px; border-radius: var(--radius-lg); margin-bottom: 12px; border: 1px solid var(--border-light);">
         <div style="font-weight: 800; margin-bottom: 12px; font-size: 13px;">📍 Tambah Basecamp / Lokasi Kerja</div>
@@ -750,7 +689,6 @@ button { border: 0; cursor: pointer; }
       <div id="adminOfficeList"></div>
     </div>
 
-    <!-- TAB REKAP & EXPORT GLOBAL -->
     <div id="tabRecap" style="display: none;">
       <div style="background: var(--surface-subtle); padding: 16px; border-radius: var(--radius-lg); margin-bottom: 12px; border: 1px solid var(--border-light);">
         <div style="font-weight: 800; margin-bottom: 8px; font-size: 13px;">📥 Export Data Seluruh Karyawan</div>
@@ -763,7 +701,6 @@ button { border: 0; cursor: pointer; }
   </div>
 </div>
 
-<!-- MODAL EDIT KARYAWAN -->
 <div class="modal" id="editUserModal">
   <div class="sheet">
     <div class="grab-bar"></div>
@@ -796,7 +733,6 @@ button { border: 0; cursor: pointer; }
   </div>
 </div>
 
-<!-- MODAL EDIT BASECAMP -->
 <div class="modal" id="editOfficeModal">
   <div class="sheet">
     <div class="grab-bar"></div>
@@ -827,7 +763,6 @@ button { border: 0; cursor: pointer; }
   </div>
 </div>
 
-<!-- MODAL EDIT ABSENSI -->
 <div class="modal" id="editAttendanceModal">
   <div class="sheet">
     <div class="grab-bar"></div>
@@ -859,15 +794,57 @@ button { border: 0; cursor: pointer; }
   </div>
 </div>
 
-<div class="toast" id="toast">Notification</div>
-
 <script>
-// ==========================================
-// CONFIG SUPABASE
-// ==========================================
 const SUPABASE_URL = "https://adrexobwaczskutdemdj.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkcmV4b2J3YWN6c2t1dGRlbWRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk1NjUwNjYsImV4cCI6MjEwNTE0MTA2Nn0.8YTjbCMkXzFANdlUvfF-hXwX0OgVJz2bPNa4suX5q_Q";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const Toast = Swal.mixin({
+  toast: true,
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+  didOpen: (toast) => {
+    toast.onmouseenter = Swal.stopTimer;
+    toast.onmouseleave = Swal.resumeTimer;
+  }
+});
+
+function showToast(message, type = 'info', title = '') {
+  const iconMap = {
+    success: 'success',
+    error: 'error',
+    warning: 'warning',
+    info: 'info'
+  };
+  
+  Toast.fire({
+    icon: iconMap[type] || 'info',
+    title: title || (type === 'success' ? 'Berhasil' : type === 'error' ? 'Gagal' : 'Informasi'),
+    text: message
+  });
+}
+
+function showConfirmDialog({ title, desc, icon = 'warning', onConfirm }) {
+  Swal.fire({
+    title: title || 'Konfirmasi Tindakan',
+    text: desc || 'Apakah Anda yakin ingin melanjutkan?',
+    icon: icon,
+    showCancelButton: true,
+    confirmButtonColor: '#10B981',
+    cancelButtonColor: '#EF4444',
+    confirmButtonText: 'Ya, Lanjutkan',
+    cancelButtonText: 'Batal',
+    reverseButtons: true,
+    background: '#FFFFFF',
+    color: '#0F172A'
+  }).then((result) => {
+    if (result.isConfirmed && onConfirm) {
+      onConfirm();
+    }
+  });
+}
 
 let state = {
   currentUserId: localStorage.getItem("charlynet_current_user") || null,
@@ -884,7 +861,14 @@ let state = {
   }
 };
 
+let capturedTimestamp = null;
+let isAttendanceModalOpen = false;
+
 const $ = id => document.getElementById(id);
+
+
+
+
 
 function getInitials(name) {
   if(!name) return "--";
@@ -892,22 +876,30 @@ function getInitials(name) {
 }
 
 function getCurrentUserObj() {
-  return state.users.find(u => u.id === state.currentUserId) || null;
+  return state.users.find(u => String(u.id) === String(state.currentUserId)) || null;
 }
 
 function getOfficeById(officeId) {
-  return state.offices.find(o => o.id === officeId) || { name: 'Lokasi Tidak Ditemukan', lat: 0, lng: 0, radius: 100 };
+  return state.offices.find(o => String(o.id) === String(officeId)) || { name: 'Lokasi Tidak Ditemukan', lat: 0, lng: 0, radius: 100 };
 }
 
 function now(){return new Date()}
-function key(d=now()){return d.toISOString().slice(0,10)}
+function key(d=now()){
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
 function time(d){return d ? new Date(d).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit",second:"2-digit"}) : '-'}
-function today(){return state.attendance.find(x => x.userId === state.currentUserId && x.date === key())}
+function today(){return state.attendance.find(x => String(x.userId) === String(state.currentUserId) && x.date === key())}
 function closeModalId(id) { $(id).classList.remove("show"); }
 
-// ==========================================
-// LOAD DATA FROM SUPABASE
-// ==========================================
+function formatToLocalDatetimeInput(dateStr) {
+  if (!dateStr) return "";
+  const d = new Date(dateStr);
+  if(isNaN(d.getTime())) return "";
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 async function loadInitialData() {
   try {
     const localSettings = localStorage.getItem("charlynet_settings");
@@ -935,7 +927,7 @@ async function loadInitialData() {
     }
   } catch(err) {
     console.error("Gagal memuat data dari Supabase:", err);
-    toast("❌ Gagal terhubung ke Database Supabase!");
+    showToast("Gagal terhubung ke Database Supabase!", "error");
   } finally {
     const splash = $("appLoadingScreen");
     if(splash) {
@@ -960,7 +952,7 @@ async function fetchUserData() {
     state.attendance = attData.map(a => ({
       id: a.id,
       userId: a.user_id,
-      userName: state.users.find(u => u.id === a.user_id)?.name || a.user_id,
+      userName: state.users.find(u => String(u.id) === String(a.user_id))?.name || a.user_id,
       date: a.date,
       in: a.time_in,
       out: a.time_out,
@@ -983,7 +975,7 @@ async function fetchUserData() {
     state.permits = permData.map(p => ({
       id: p.id,
       userId: p.user_id,
-      userName: state.users.find(u => u.id === p.user_id)?.name || p.user_id,
+      userName: state.users.find(u => String(u.id) === String(p.user_id))?.name || p.user_id,
       type: p.type,
       date: p.date,
       note: p.note,
@@ -992,9 +984,6 @@ async function fetchUserData() {
   }
 }
 
-// ==========================================
-// AUTHENTICATION
-// ==========================================
 async function handleLogin(e) {
   e.preventDefault();
   const username = $("inputUsername").value.trim();
@@ -1011,7 +1000,7 @@ async function handleLogin(e) {
       .maybeSingle();
 
     if(error || !user) {
-      toast("❌ Username atau Kata Sandi Salah!");
+      showToast("Username atau Kata Sandi yang dimasukkan salah!", "error", "Akses Ditolak");
       btn.disabled = false;
       return;
     }
@@ -1023,28 +1012,32 @@ async function handleLogin(e) {
     
     $("inputUsername").value = "";
     $("inputPassword").value = "";
-    toast(`Selamat datang, ${user.name}!`);
+    showToast(`Selamat datang kembali, ${user.name}!`, "success");
     
     await loadInitialData();
   } catch(err) {
-    toast("❌ Gagal login: " + err.message);
+    showToast("Gagal login: " + err.message, "error");
   } finally {
     btn.disabled = false;
   }
 }
 
 function handleLogout() {
-  state.currentUserId = null;
-  state.activePage = "home";
-  localStorage.removeItem("charlynet_current_user");
-  localStorage.removeItem("charlynet_active_page");
-  toast("Anda telah keluar.");
-  renderApp();
+  showConfirmDialog({
+    title: "Keluar Sesi",
+    desc: "Apakah Anda ingin keluar dari aplikasi?",
+    icon: "🚪",
+    onConfirm: () => {
+      state.currentUserId = null;
+      state.activePage = "home";
+      localStorage.removeItem("charlynet_current_user");
+      localStorage.removeItem("charlynet_active_page");
+      showToast("Anda berhasil keluar dari sistem.", "info");
+      renderApp();
+    }
+  });
 }
 
-// ==========================================
-// RENDER & UI LOGIC
-// ==========================================
 function renderClock(){
   const d=now();
   if($("clock")) $("clock").textContent=d.toLocaleTimeString("id-ID",{hour12:false});
@@ -1068,6 +1061,7 @@ function initMiniMap(){
   const userObj = getCurrentUserObj();
   if(!userObj) return;
   const off = getOfficeById(userObj.officeId);
+
   if(miniMap) { 
     miniMap.setView([off.lat, off.lng], 16);
     if(officeMarker) officeMarker.setLatLng([off.lat, off.lng]);
@@ -1082,6 +1076,7 @@ function initMiniMap(){
 }
 
 function updateGPSUI(lat,lng,accuracy,distance){
+  if (!isAttendanceModalOpen) return;
   const userObj = getCurrentUserObj();
   if(!userObj) return;
   const off = getOfficeById(userObj.officeId);
@@ -1124,9 +1119,11 @@ function updateGPSUI(lat,lng,accuracy,distance){
 }
 
 function refreshLocation(){
+  if (!isAttendanceModalOpen) return;
   $("locationText").textContent = "Memperbarui GPS...";
   if(navigator.geolocation){
     navigator.geolocation.getCurrentPosition(pos=>{
+      if (!isAttendanceModalOpen) return;
       const userObj = getCurrentUserObj();
       if(!userObj) return;
       const off = getOfficeById(userObj.officeId);
@@ -1136,15 +1133,24 @@ function refreshLocation(){
       updateGPSUI(currentLocation.lat,currentLocation.lng,currentLocation.accuracy,dist);
       if(miniMap) miniMap.invalidateSize();
     },()=>{
+      if (!isAttendanceModalOpen) return;
       $("locationText").textContent="Gagal mengambil lokasi GPS";
+      showToast("Gagal mendeteksi sinyal GPS lokasi Anda", "error");
     },{enableHighAccuracy:true,timeout:10000,maximumAge:0});
   }
 }
 
 async function openAttendance(){
   const t=today();
-  if(t && t.out){toast("Absensi hari ini sudah selesai.");return}
+  if(t && t.out){showToast("Absensi hari ini telah selesai.", "info");return}
   pendingAction=t?"out":"in";
+  isAttendanceModalOpen = true;
+
+  if (userMarker && miniMap) {
+    miniMap.removeLayer(userMarker);
+    userMarker = null;
+  }
+
   $("attendanceTitle").textContent=t?"Absen Pulang":"Absen Masuk";
   $("attendanceModal").classList.add("show");
   setTimeout(initMiniMap,150);
@@ -1154,7 +1160,7 @@ async function openAttendance(){
     cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user"},audio:false});
     $("video").srcObject=cameraStream;
   }catch(e){
-    toast("Izin kamera ditolak.");
+    showToast("Akses kamera ditolak oleh perangkat.", "error");
   }
   refreshLocation();
 }
@@ -1177,6 +1183,7 @@ function captureAttendance(){
   ctx.drawImage(video,0,0,canvas.width,canvas.height); ctx.restore();
 
   const d = now();
+  capturedTimestamp = d.toISOString();
   const timeStr = d.toLocaleDateString("id-ID") + " " + time(d);
   
   ctx.fillStyle = "rgba(15, 23, 42, 0.75)";
@@ -1233,6 +1240,10 @@ function checkLateAndOvertimeStatus(nowDate, type) {
     const targetOut = new Date(nowDate);
     targetOut.setHours(workOutHour, workOutMin, 0, 0);
     
+    if (workOutHour < workInHour) {
+      targetOut.setDate(targetOut.getDate() + 1);
+    }
+    
     if (nowDate > targetOut) {
       const diffMs = nowDate - targetOut;
       const diffMinutes = Math.floor(diffMs / (1000 * 60));
@@ -1245,12 +1256,14 @@ function checkLateAndOvertimeStatus(nowDate, type) {
 }
 
 async function submitConfirmation(){
-  const d=now(), userObj = getCurrentUserObj(), off = getOfficeById(userObj.officeId);
+  const d = capturedTimestamp ? new Date(capturedTimestamp) : now();
+  const userObj = getCurrentUserObj();
+  const off = getOfficeById(userObj.officeId);
   const btn = $("sendAttendanceBtn");
   btn.disabled = true;
 
   try {
-    toast("Mengunggah data & foto...");
+    showToast("Mengunggah foto presensi ke Cloud...", "info");
 
     const fileName = `${userObj.id}_${pendingAction}_${Date.now()}`;
     const photoUrl = await uploadAttendancePhoto(currentPhoto, fileName);
@@ -1259,7 +1272,7 @@ async function submitConfirmation(){
       const isLate = checkLateAndOvertimeStatus(d, "in");
       const { error } = await supabaseClient.from('attendances').insert([{
         user_id: userObj.id,
-        date: key(),
+        date: key(d),
         time_in: d.toISOString(),
         is_late: isLate,
         in_photo_url: photoUrl,
@@ -1278,7 +1291,7 @@ async function submitConfirmation(){
           overtime_minutes: overtimeMins
         })
         .eq('user_id', userObj.id)
-        .eq('date', key());
+        .eq('date', key(d));
 
       if (error) throw error;
     }
@@ -1287,10 +1300,10 @@ async function submitConfirmation(){
     closeAttendance();
     await fetchUserData();
     renderApp();
-    toast("✅ Absensi Berhasil Disimpan!");
+    showToast("Presensi berhasil dicatat!", "success");
   } catch(err) {
     console.error(err);
-    toast("❌ Gagal menyimpan absensi: " + err.message);
+    showToast("Gagal menyimpan presensi: " + err.message, "error");
   } finally {
     btn.disabled = false;
   }
@@ -1298,6 +1311,7 @@ async function submitConfirmation(){
 
 function cancelConfirmation(){ $("confirmModal").classList.remove("show"); }
 function closeAttendance(){
+  isAttendanceModalOpen = false;
   cancelConfirmation();
   $("attendanceModal").classList.remove("show");
   if(cameraStream){cameraStream.getTracks().forEach(x=>x.stop());cameraStream=null}
@@ -1305,7 +1319,7 @@ function closeAttendance(){
 
 function exportCSV(){
   let csv = "User ID,Nama,Tanggal,Masuk,Pulang,Status,Lembur (Menit),Lokasi Basecamp\n";
-  const myData = state.attendance.filter(x => x.userId === state.currentUserId);
+  const myData = state.attendance.filter(x => String(x.userId) === String(state.currentUserId));
   myData.forEach(x => {
     csv += `${x.userId},${x.userName},${x.date},${time(x.in)},${x.out?time(x.out):'-'},${x.late?'Terlambat':'Hadir'},${x.overtimeMinutes||0},${x.locationName}\n`;
   });
@@ -1315,6 +1329,7 @@ function exportCSV(){
   a.setAttribute('href', url);
   a.setAttribute('download', `Rekap_Absen_${state.currentUserId}_${key()}.csv`);
   a.click();
+  showToast("File CSV presensi telah diunduh.", "success");
 }
 
 function exportAllCSV(){
@@ -1328,6 +1343,7 @@ function exportAllCSV(){
   a.setAttribute('href', url);
   a.setAttribute('download', `Rekap_Presensi_Global_${key()}.csv`);
   a.click();
+  showToast("Unduh rekap global CSV berhasil.", "success");
 }
 
 function exportPDF(){
@@ -1347,7 +1363,7 @@ function exportPDF(){
   doc.line(14, y+2, 190, y+2);
   y += 10;
 
-  const myData = state.attendance.filter(x => x.userId === state.currentUserId);
+  const myData = state.attendance.filter(x => String(x.userId) === String(state.currentUserId));
   myData.forEach(x => {
     doc.text(x.date, 14, y);
     doc.text(time(x.in), 50, y);
@@ -1358,6 +1374,7 @@ function exportPDF(){
   });
 
   doc.save(`Laporan_Absen_${userObj.name.replace(/\s+/g, '_')}.pdf`);
+  showToast("Dokumen PDF berhasil di-generate.", "success");
 }
 
 function renderApp(){
@@ -1401,7 +1418,7 @@ function renderApp(){
   const activePageEl = $(state.activePage);
   if(activePageEl) activePageEl.classList.add("active");
 
-  const userAttendance = state.attendance.filter(x => x.userId === state.currentUserId);
+  const userAttendance = state.attendance.filter(x => String(x.userId) === String(state.currentUserId));
   const thisMonth = userAttendance.filter(x => x.date.slice(0,7) === key().slice(0,7));
   const totalLembur = thisMonth.filter(x=>x.overtimeMinutes > 0).length;
 
@@ -1472,21 +1489,28 @@ async function approvePermit(permitId, newStatus) {
       .eq('id', permitId);
 
     if (error) throw error;
-    toast(`Pengajuan ${newStatus}!`);
+    showToast(`Pengajuan ${newStatus.toLowerCase()}!`, "success");
     await fetchUserData();
     renderApp();
   } catch (err) {
-    toast("❌ Gagal memperbarui status izin!");
+    showToast("Gagal memperbarui status izin!", "error");
   }
 }
 
 function row(x){
-  const dt=new Date(x.date+"T00:00:00").toLocaleDateString("id-ID",{day:"2-digit",month:"short",year:"numeric"});
+  const [year, month, day] = x.date.split("-");
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+  const dt = `${day} ${monthNames[parseInt(month, 10) - 1]} ${year}`;
+
   const overtimeBadge = x.overtimeMinutes > 0 ? `<span class="badge overtime" style="margin-left:4px;">Lembur ${x.overtimeMinutes}m</span>` : '';
   return `<div class="row"><div class="icon-box">📌</div><div class="grow"><b>${dt}</b><div class="muted">Masuk: ${time(x.in)}${x.out?" • Pulang: "+time(x.out):""} (${x.locationName})</div></div><span class="badge ${x.late?"late":""}">${x.late?"Terlambat":"Hadir"}</span>${overtimeBadge}</div>`;
 }
 
-function openModal(){$("permitDate").value=key();$("modal").classList.add("show")}
+function openModal(){
+  $("permitDate").value = key();
+  $("permitDate").setAttribute("min", key());
+  $("modal").classList.add("show");
+}
 function closeModal(){$("modal").classList.remove("show")}
 
 $("permitForm").onsubmit = async e => {
@@ -1511,13 +1535,12 @@ $("permitForm").onsubmit = async e => {
     e.target.reset();
     await fetchUserData();
     renderApp();
-    toast("✅ Pengajuan izin terkirim!");
+    showToast("Pengajuan izin berhasil terkirim!", "success");
   } catch(err) {
-    toast("❌ Gagal mengirim izin: " + err.message);
+    showToast("Gagal mengirim izin: " + err.message, "error");
   }
 };
 
-/* ADMIN FUNCTIONS */
 function openAdminModal(){
   renderAdminPanel();
   $("adminModal").classList.add("show");
@@ -1582,43 +1605,61 @@ function renderAdminPanel() {
   }).join("");
 }
 
-async function deleteUser(userId) {
-  if(!confirm(`Yakin ingin menghapus karyawan dengan ID: ${userId}?`)) return;
-  try {
-    const { error } = await supabaseClient.from('profiles').delete().eq('id', userId);
-    if(error) throw error;
-    toast("✅ Karyawan berhasil dihapus!");
-    await loadInitialData();
-    renderAdminPanel();
-  } catch(err) {
-    toast("❌ Gagal menghapus karyawan: " + err.message);
-  }
+function deleteUser(userId) {
+  showConfirmDialog({
+    title: "Hapus Akun Karyawan",
+    desc: `Yakin ingin menghapus karyawan dengan ID: ${userId}? Data yang dihapus tidak dapat dikembalikan.`,
+    icon: "🗑️",
+    onConfirm: async () => {
+      try {
+        const { error } = await supabaseClient.from('profiles').delete().eq('id', userId);
+        if(error) throw error;
+        showToast("Karyawan berhasil dihapus!", "success");
+        await loadInitialData();
+        renderAdminPanel();
+      } catch(err) {
+        showToast("Gagal menghapus karyawan: " + err.message, "error");
+      }
+    }
+  });
 }
 
-async function deleteOffice(officeId) {
-  if(!confirm(`Yakin ingin menghapus basecamp ID: ${officeId}?`)) return;
-  try {
-    const { error } = await supabaseClient.from('offices').delete().eq('id', officeId);
-    if(error) throw error;
-    toast("✅ Basecamp berhasil dihapus!");
-    await loadInitialData();
-    renderAdminPanel();
-  } catch(err) {
-    toast("❌ Gagal menghapus basecamp: " + err.message);
-  }
+function deleteOffice(officeId) {
+  showConfirmDialog({
+    title: "Hapus Basecamp",
+    desc: `Yakin ingin menghapus basecamp ID: ${officeId}?`,
+    icon: "📍",
+    onConfirm: async () => {
+      try {
+        const { error } = await supabaseClient.from('offices').delete().eq('id', officeId);
+        if(error) throw error;
+        showToast("Basecamp berhasil dihapus!", "success");
+        await loadInitialData();
+        renderAdminPanel();
+      } catch(err) {
+        showToast("Gagal menghapus basecamp: " + err.message, "error");
+      }
+    }
+  });
 }
 
-async function deleteAttendance(attId) {
-  if(!confirm("Yakin ingin menghapus data absensi ini?")) return;
-  try {
-    const { error } = await supabaseClient.from('attendances').delete().eq('id', attId);
-    if(error) throw error;
-    toast("✅ Data absensi dihapus!");
-    await fetchUserData();
-    renderApp();
-  } catch(err) {
-    toast("❌ Gagal menghapus absensi: " + err.message);
-  }
+function deleteAttendance(attId) {
+  showConfirmDialog({
+    title: "Hapus Data Absensi",
+    desc: "Apakah Anda yakin ingin menghapus data presensi ini?",
+    icon: "📌",
+    onConfirm: async () => {
+      try {
+        const { error } = await supabaseClient.from('attendances').delete().eq('id', attId);
+        if(error) throw error;
+        showToast("Data absensi berhasil dihapus!", "success");
+        await fetchUserData();
+        renderApp();
+      } catch(err) {
+        showToast("Gagal menghapus absensi: " + err.message, "error");
+      }
+    }
+  });
 }
 
 $("shiftSettingsForm").onsubmit = e => {
@@ -1629,7 +1670,7 @@ $("shiftSettingsForm").onsubmit = e => {
   state.settings.overtimeMinMinutes = $("setOvertimeMinMinutes").value;
 
   localStorage.setItem("charlynet_settings", JSON.stringify(state.settings));
-  toast("✅ Pengaturan jam kerja & lembur disimpan!");
+  showToast("Pengaturan jam kerja & lembur berhasil disimpan!", "success");
 };
 
 $("addUserForm").onsubmit = async e => {
@@ -1655,15 +1696,21 @@ $("addUserForm").onsubmit = async e => {
     e.target.reset();
     await loadInitialData();
     renderAdminPanel();
-    toast("✅ Karyawan baru berhasil ditambahkan!");
+    showToast("Karyawan baru berhasil ditambahkan!", "success");
   } catch(err) {
-    toast("❌ Gagal tambah karyawan: " + err.message);
+    showToast("Gagal tambah karyawan: " + err.message, "error");
   }
 };
 
 $("addOfficeForm").onsubmit = async e => {
   e.preventDefault();
-  const id = "OFF" + String(state.offices.length + 1).padStart(3, '0');
+  
+  const maxId = state.offices.reduce((max, o) => {
+    const num = parseInt(String(o.id).replace('OFF', ''), 10);
+    return !isNaN(num) && num > max ? num : max;
+  }, 0);
+  const id = "OFF" + String(maxId + 1).padStart(3, '0');
+
   const name = $("newOfficeName").value.trim();
   const lat = parseFloat($("newOfficeLat").value);
   const lng = parseFloat($("newOfficeLng").value);
@@ -1683,15 +1730,14 @@ $("addOfficeForm").onsubmit = async e => {
     e.target.reset();
     await loadInitialData();
     renderAdminPanel();
-    toast("✅ Basecamp baru ditambahkan!");
+    showToast("Basecamp baru berhasil ditambahkan!", "success");
   } catch(err) {
-    toast("❌ Gagal tambah basecamp: " + err.message);
+    showToast("Gagal tambah basecamp: " + err.message, "error");
   }
 };
 
-/* LOGIKA EDIT DATA (KARYAWAN, BASECAMP, ABSENSI) */
 function openEditUserModal(userId) {
-  const user = state.users.find(u => u.id === userId);
+  const user = state.users.find(u => String(u.id) === String(userId));
   if (!user) return;
 
   $("editUserId").value = user.id;
@@ -1700,7 +1746,7 @@ function openEditUserModal(userId) {
   $("editUserRole").value = user.role;
 
   $("editUserOffice").innerHTML = state.offices.map(o => 
-    `<option value="${o.id}" ${o.id === user.officeId ? 'selected' : ''}>${o.name}</option>`
+    `<option value="${o.id}" ${String(o.id) === String(user.officeId) ? 'selected' : ''}>${o.name}</option>`
   ).join("");
 
   $("editUserModal").classList.add("show");
@@ -1728,16 +1774,16 @@ $("editUserForm").onsubmit = async e => {
     if (error) throw error;
 
     closeModalId("editUserModal");
-    toast("✅ Data karyawan berhasil diperbarui!");
+    showToast("Data karyawan berhasil diperbarui!", "success");
     await loadInitialData();
     renderAdminPanel();
   } catch (err) {
-    toast("❌ Gagal update karyawan: " + err.message);
+    showToast("Gagal update karyawan: " + err.message, "error");
   }
 };
 
 function openEditOfficeModal(officeId) {
-  const office = state.offices.find(o => o.id === officeId);
+  const office = state.offices.find(o => String(o.id) === String(officeId));
   if (!office) return;
 
   $("editOfficeId").value = office.id;
@@ -1762,24 +1808,24 @@ $("editOfficeForm").onsubmit = async e => {
     if (error) throw error;
 
     closeModalId("editOfficeModal");
-    toast("✅ Basecamp berhasil diperbarui!");
+    showToast("Basecamp berhasil diperbarui!", "success");
     await loadInitialData();
     renderAdminPanel();
   } catch (err) {
-    toast("❌ Gagal update basecamp: " + err.message);
+    showToast("Gagal update basecamp: " + err.message, "error");
   }
 };
 
 function openEditAttendanceModal(attId) {
-  const att = state.attendance.find(a => a.id === attId);
+  const att = state.attendance.find(a => String(a.id) === String(attId));
   if (!att) return;
 
   $("editAttId").value = att.id;
   $("editAttIsLate").value = att.late ? "true" : "false";
   $("editAttOvertime").value = att.overtimeMinutes || 0;
 
-  if(att.in) $("editAttTimeIn").value = new Date(att.in).toISOString().slice(0, 16);
-  if(att.out) $("editAttTimeOut").value = new Date(att.out).toISOString().slice(0, 16);
+  if(att.in) $("editAttTimeIn").value = formatToLocalDatetimeInput(att.in);
+  if(att.out) $("editAttTimeOut").value = formatToLocalDatetimeInput(att.out);
   else $("editAttTimeOut").value = "";
 
   $("editAttendanceModal").classList.add("show");
@@ -1806,15 +1852,13 @@ $("editAttendanceForm").onsubmit = async e => {
     if (error) throw error;
 
     closeModalId("editAttendanceModal");
-    toast("✅ Data presensi berhasil dikoreksi!");
+    showToast("Data presensi berhasil dikoreksi!", "success");
     await fetchUserData();
     renderApp();
   } catch (err) {
-    toast("❌ Gagal koreksi presensi: " + err.message);
+    showToast("Gagal koreksi presensi: " + err.message, "error");
   }
 };
-
-function toast(msg){$("toast").textContent=msg;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),2500)}
 
 document.querySelectorAll(".nav-item").forEach(n=>n.onclick=()=>{
   document.querySelectorAll(".nav-item,.page").forEach(x=>x.classList.remove("active"));
