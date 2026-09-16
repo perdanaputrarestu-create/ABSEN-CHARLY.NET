@@ -129,10 +129,10 @@ button { border: 0; cursor: pointer; }
   border-left: 3px solid var(--primary);
 }
 
-/* === TOP HEADER === */
+/* === TOP HEADER (Diperbaiki agar teks tidak ketutup lengkungan) === */
 .header-bg {
   background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
-  padding: 28px 24px 60px 24px;
+  padding: 28px 24px 45px 24px;
   border-radius: 0 0 32px 32px;
   color: #fff;
   position: relative;
@@ -171,7 +171,8 @@ button { border: 0; cursor: pointer; }
   font-weight: 600;
 }
 
-.content { padding: 0 20px; margin-top: -36px; }
+/* Margin atas konten dikurangi agar tidak ada jeda kosong yang terlalu jauh tapi tetap aman tidak tertutup */
+.content { padding: 0 20px; margin-top: 16px; }
 
 /* === CARDS & HERO === */
 .card { 
@@ -746,6 +747,7 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 // State Memory Sementara
 let state = {
   currentUserId: localStorage.getItem("charlynet_current_user") || null,
+  activePage: localStorage.getItem("charlynet_active_page") || "home",
   users: [],
   offices: [],
   attendance: [],
@@ -885,7 +887,9 @@ async function handleLogin(e) {
     }
 
     state.currentUserId = user.id;
+    state.activePage = "home";
     localStorage.setItem("charlynet_current_user", user.id);
+    localStorage.setItem("charlynet_active_page", "home");
     
     $("inputUsername").value = "";
     $("inputPassword").value = "";
@@ -901,7 +905,9 @@ async function handleLogin(e) {
 
 function handleLogout() {
   state.currentUserId = null;
+  state.activePage = "home";
   localStorage.removeItem("charlynet_current_user");
+  localStorage.removeItem("charlynet_active_page");
   toast("Anda telah keluar.");
   renderApp();
 }
@@ -1253,12 +1259,17 @@ function renderApp(){
   } else {
     $("navAdminTab").style.display = "none";
     $("mainNav").classList.remove("admin-mode");
-    if($("adminDashboard").classList.contains("active")) {
-      document.querySelectorAll(".nav-item,.page").forEach(x=>x.classList.remove("active"));
-      document.querySelector('.nav-item[data-page="home"]').classList.add("active");
-      $("home").classList.add("active");
+    if(state.activePage === "adminDashboard") {
+      state.activePage = "home";
     }
   }
+
+  // Restore halaman aktif dari state/localStorage
+  document.querySelectorAll(".nav-item,.page").forEach(x=>x.classList.remove("active"));
+  const activeNavBtn = document.querySelector(`.nav-item[data-page="${state.activePage}"]`);
+  if(activeNavBtn) activeNavBtn.classList.add("active");
+  const activePageEl = $(state.activePage);
+  if(activePageEl) activePageEl.classList.add("active");
 
   const userAttendance = state.attendance.filter(x => x.userId === state.currentUserId);
   const thisMonth = userAttendance.filter(x => x.date.slice(0,7) === key().slice(0,7));
@@ -1501,7 +1512,13 @@ function toast(msg){$("toast").textContent=msg;$("toast").classList.add("show");
 document.querySelectorAll(".nav-item").forEach(n=>n.onclick=()=>{
   document.querySelectorAll(".nav-item,.page").forEach(x=>x.classList.remove("active"));
   n.classList.add("active");
-  $(n.dataset.page).classList.add("active");
+  const targetPage = n.dataset.page;
+  $(targetPage).classList.add("active");
+  
+  // Simpan halaman aktif ke state & localStorage agar tidak berubah saat di-refresh
+  state.activePage = targetPage;
+  localStorage.setItem("charlynet_active_page", targetPage);
+  
   renderApp();
 });
 
