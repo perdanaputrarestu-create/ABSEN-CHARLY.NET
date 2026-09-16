@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<title>AbsenKu — Absensi</title>
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--text:#172033;--muted:#748096;--primary:#2563eb;--primary2:#1d4ed8;--green:#16a34a;--red:#dc2626;--line:#e8ecf3;--shadow:0 10px 30px #17203312}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,select,textarea{font:inherit}button{border:0;cursor:pointer}.app{max-width:520px;margin:auto;min-height:100dvh;padding:18px 16px 92px}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}.brand{font-weight:800;font-size:22px}.brand span{color:var(--primary)}.avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:#dbeafe;color:#1d4ed8;font-weight:800}
+.page{display:none}.page.active{display:block}.hello{color:var(--muted);margin-bottom:3px}.name{font-size:25px;font-weight:800;margin-bottom:16px}
+.card{background:var(--card);border-radius:22px;padding:18px;box-shadow:var(--shadow);margin-bottom:14px}.hero{background:linear-gradient(145deg,#1d4ed8,#2563eb);color:white;padding:22px}.date{opacity:.85;font-size:13px}.clock{font-size:42px;font-weight:800;letter-spacing:-1px;margin:4px 0}.status{font-size:13px;opacity:.9}
+.btn{width:100%;padding:14px 16px;border-radius:14px;font-weight:800;transition:.15s}.btn:active{transform:scale(.98)}.btn.white{background:#fff;color:#1d4ed8;margin-top:15px}.btn.primary{background:var(--primary);color:#fff}.btn.green{background:var(--green);color:#fff}.btn:disabled{opacity:.45;cursor:not-allowed}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat{text-align:center;padding:14px 8px}.stat b{font-size:23px;display:block}.stat small{color:var(--muted)}
+.section-title{font-size:17px;font-weight:800;margin:20px 2px 10px}.row{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}.row:last-child{border:0}.icon{width:40px;height:40px;border-radius:12px;background:#eff6ff;display:grid;place-items:center}.grow{flex:1}.muted{color:var(--muted);font-size:13px}.badge{font-size:11px;font-weight:800;padding:5px 8px;border-radius:20px;background:#dcfce7;color:#15803d}.badge.late{background:#fef3c7;color:#a16207}.empty{text-align:center;color:var(--muted);padding:28px 10px}
+.bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);background:#fff;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(3,1fr);padding:9px 8px calc(9px + env(safe-area-inset-bottom));z-index:5}.nav{background:none;color:#8a94a6;font-size:11px;font-weight:700}.nav span{display:block;font-size:21px;line-height:25px}.nav.active{color:var(--primary)}
+.modal{position:fixed;inset:0;background:#0008;display:none;align-items:flex-end;justify-content:center;z-index:10}.modal.show{display:flex}.sheet{width:min(520px,100%);max-height:88dvh;overflow:auto;background:#fff;border-radius:24px 24px 0 0;padding:20px 16px calc(25px + env(safe-area-inset-bottom));animation:up .2s ease}@keyframes up{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}.sheet h2{margin:0 0 15px}.close{float:right;background:#f1f5f9;border-radius:50%;width:34px;height:34px}.field{margin:12px 0}.field label{display:block;font-weight:700;margin-bottom:6px}.field input,.field select,.field textarea{width:100%;padding:13px;border:1px solid #dfe4ec;border-radius:12px;outline:0;background:#fff}.field textarea{min-height:100px;resize:vertical}.toast{position:fixed;left:50%;bottom:88px;transform:translateX(-50%) translateY(15px);background:#172033;color:#fff;padding:11px 15px;border-radius:12px;font-size:13px;opacity:0;pointer-events:none;transition:.2s;z-index:20;white-space:nowrap}.toast.show{opacity:1;transform:translateX(-50%)}
+.profile{text-align:center}.profile .avatar{margin:auto;width:72px;height:72px;font-size:24px}.danger{color:var(--red);background:#fee2e2;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top"><div class="brand">Absen<span>Ku</span></div><div class="avatar" id="avatar">RU</div></header>
+
+  <main id="home" class="page active">
+    <div class="hello">Selamat datang 👋</div><div class="name" id="displayName">Restu Ulfah</div>
+    <section class="card hero">
+      <div class="date" id="date"></div><div class="clock" id="clock">00:00:00</div>
+      <div class="status" id="status">Memeriksa status absensi...</div>
+      <button class="btn white" id="absenBtn" onclick="openAttendance()">📷 Absen dengan Foto</button>
+    </section>
+    <div class="grid card">
+      <div class="stat"><b id="hadir">0</b><small>Hadir</small></div>
+      <div class="stat"><b id="terlambat">0</b><small>Terlambat</small></div>
+      <div class="stat"><b id="izin">0</b><small>Izin</small></div>
+    </div>
+    <div class="section-title">Riwayat Terbaru</div><section class="card" id="recent"></section>
+  </main>
+
+  <main id="history" class="page">
+    <div class="name">Riwayat Absensi</div>
+    <section class="card" id="historyList"></section>
+  </main>
+
+  <main id="profile" class="page">
+    <div class="name">Profil</div>
+    <section class="card profile">
+      <div class="avatar" id="profileAvatar">RU</div><h2 id="profileName">Restu Ulfah</h2><div class="muted">Karyawan</div>
+    </section>
+    <section class="card">
+      <button class="btn primary" onclick="openModal()">📝 Ajukan Izin / Sakit</button>
+      <button class="btn danger" onclick="resetData()">↻ Reset Data Demo</button>
+    </section>
+  </main>
+</div>
+
+<nav class="bottom">
+  <button class="nav active" data-page="home"><span>⌂</span>Home</button>
+  <button class="nav" data-page="history"><span>☷</span>Riwayat</button>
+  <button class="nav" data-page="profile"><span>♙</span>Profil</button>
+</nav>
+
+
+<div class="modal" id="attendanceModal" onclick="if(event.target===this)closeAttendance()">
+  <div class="sheet">
+    <button class="close" onclick="closeAttendance()">✕</button>
+    <h2 id="attendanceTitle">Absen Masuk</h2>
+    <div class="camera"><video id="video" autoplay playsinline></video><canvas id="canvas"></canvas></div>
+    <div class="cam-status" id="camStatus">Kamera siap digunakan.</div>
+    <div class="location"><b>📍 Lokasi & Radius Kantor</b><span id="locationText">Mencari lokasi...</span><div id="radiusText" style="margin-top:5px">Jarak dari kantor: menghitung...</div></div>
+    <button class="btn primary" id="captureBtn" onclick="captureAttendance()">📸 Ambil Foto & Absen</button>
+  </div>
+</div>
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="sheet">
+    <button class="close" onclick="closeModal()">✕</button><h2>Pengajuan</h2>
+    <form id="permitForm">
+      <div class="field"><label>Jenis</label><select id="permitType"><option>Izin</option><option>Sakit</option></select></div>
+      <div class="field"><label>Tanggal</label><input id="permitDate" type="date" required></div>
+      <div class="field"><label>Keterangan</label><textarea id="permitNote" placeholder="Tulis alasan..." required></textarea></div>
+      <button class="btn primary">Kirim Pengajuan</button>
+    </form>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const KEY="absenku_v1", user={name:"Restu Ulfah"};
+// === PENGATURAN KANTOR ===
+// Ganti koordinat berikut dengan titik lokasi kantor.
+// Contoh: latitude -6.200000, longitude 106.816666, radius 100 meter.
+const OFFICE={lat:-6.200000,lng:106.816666,radius:100};
+let data=JSON.parse(localStorage.getItem(KEY)||'{"attendance":[], "permits":[]}');
+
+const $=id=>document.getElementById(id), save=()=>localStorage.setItem(KEY,JSON.stringify(data));
+function pad(n){return String(n).padStart(2,"0")}
+function now(){return new Date()}
+function key(d=now()){return d.toISOString().slice(0,10)}
+function time(d){return new Date(d).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit",second:"2-digit"})}
+function today(){return data.attendance.find(x=>x.date===key())}
+function renderClock(){
+ const d=now();$("clock").textContent=d.toLocaleTimeString("id-ID",{hour12:false});
+ $("date").textContent=d.toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+ renderStatus();
+}
+function renderStatus(){
+ const t=today(), b=$("absenBtn");
+ if(!t){$("status").textContent="Anda belum melakukan absensi hari ini";b.textContent="🟢 Absen Masuk";b.disabled=false}
+ else if(!t.out){$("status").textContent=`Masuk ${time(t.in)} • Foto + koordinat tersimpan`;b.textContent="🏁 Absen Pulang";b.disabled=false}
+ else{$("status").textContent=`Masuk ${time(t.in)} • Pulang ${time(t.out)} • Foto + koordinat tersimpan`;b.textContent="✓ Absensi Selesai";b.disabled=true}
+}
+let cameraStream=null, pendingAction=null, currentLocation=null, currentPhoto=null;
+
+async function openAttendance(){
+  const t=today();
+  if(t && t.out){toast("Absensi hari ini sudah selesai.");return}
+  pendingAction=t?"out":"in";
+  $("attendanceTitle").textContent=t?"Absen Pulang":"Absen Masuk";
+  $("captureBtn").textContent=t?"📸 Ambil Foto & Absen Pulang":"📸 Ambil Foto & Absen Masuk";
+  $("attendanceModal").classList.add("show");
+  currentLocation=null; currentPhoto=null;
+  $("captureBtn").disabled=true;
+  $("locationText").textContent="Mencari lokasi...";
+  $("radiusText").textContent=`Jarak dari kantor: menghitung... (radius ${OFFICE.radius} m)`;
+  $("camStatus").textContent="Meminta izin kamera...";
+  try{
+    cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user"},audio:false});
+    $("video").srcObject=cameraStream;
+    $("camStatus").textContent="Kamera aktif. Pastikan wajah terlihat jelas.";
+  }catch(e){
+    $("camStatus").textContent="Kamera tidak bisa diakses. Izinkan kamera lalu coba lagi.";
+  }
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(pos=>{
+      currentLocation={lat:pos.coords.latitude,lng:pos.coords.longitude,accuracy:Math.round(pos.coords.accuracy)};
+      const dist=distanceMeters(currentLocation.lat,currentLocation.lng,OFFICE.lat,OFFICE.lng);
+      const inside=dist<=OFFICE.radius;
+      $("locationText").textContent=`${currentLocation.lat.toFixed(6)}, ${currentLocation.lng.toFixed(6)} • akurasi ±${currentLocation.accuracy} m`;
+      $("radiusText").textContent=`${inside?"✅ Dalam":"❌ Di luar"} radius • Jarak ${Math.round(dist)} m / maksimal ${OFFICE.radius} m`;
+      $("radiusText").style.color=inside?"var(--green)":"var(--red)";
+      $("captureBtn").disabled=!inside;
+    },()=>{
+      $("locationText").textContent="Lokasi tidak diizinkan. Aktifkan GPS untuk mencatat koordinat.";
+    },{enableHighAccuracy:true,timeout:10000,maximumAge:0});
+  }else $("locationText").textContent="Browser tidak mendukung GPS.";
+}
+
+function distanceMeters(lat1,lon1,lat2,lon2){
+  const R=6371000, r=Math.PI/180, dLat=(lat2-lat1)*r, dLon=(lon2-lon1)*r;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*r)*Math.cos(lat2*r)*Math.sin(dLon/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+function captureAttendance(){
+  if(!currentLocation){toast("Lokasi belum tersedia. Aktifkan GPS dan coba lagi.");return}
+  const dist=distanceMeters(currentLocation.lat,currentLocation.lng,OFFICE.lat,OFFICE.lng);
+  if(dist>OFFICE.radius){toast(`Tidak bisa absen. Anda ${Math.round(dist)} m dari kantor.`);return}
+  const video=$("video"), canvas=$("canvas");
+  if(!video.videoWidth){toast("Kamera belum siap.");return}
+  canvas.width=video.videoWidth;canvas.height=video.videoHeight;
+  canvas.getContext("2d").drawImage(video,0,0,canvas.width,canvas.height);
+  currentPhoto=canvas.toDataURL("image/jpeg",.72);
+
+  const d=now(), t=today();
+  if(pendingAction==="in"){
+    data.attendance.unshift({date:key(),in:d.toISOString(),out:null,late:d.getHours()>8||(d.getHours()===8&&d.getMinutes()>0),inPhoto:currentPhoto,inLat:currentLocation.lat,inLng:currentLocation.lng,inAccuracy:currentLocation.accuracy});
+  }else if(t && !t.out){
+    t.out=d.toISOString();t.outPhoto=currentPhoto;t.outLat=currentLocation.lat;t.outLng=currentLocation.lng;t.outAccuracy=currentLocation.accuracy;
+  }
+  save();closeAttendance();render();toast(pendingAction==="in"?"Absen masuk berhasil!":"Absen pulang berhasil!");
+}
+
+function closeAttendance(){
+  $("attendanceModal").classList.remove("show");
+  if(cameraStream){cameraStream.getTracks().forEach(x=>x.stop());cameraStream=null}
+}
+function render(){
+ const a=data.attendance, thisMonth=a.filter(x=>x.date.slice(0,7)===key().slice(0,7));
+ $("hadir").textContent=thisMonth.length;$("terlambat").textContent=thisMonth.filter(x=>x.late).length;
+ $("izin").textContent=data.permits.filter(x=>x.date.slice(0,7)===key().slice(0,7)).length;
+ const rows=a.slice(0,5).map(x=>row(x)).join("");$("recent").innerHTML=rows||'<div class="empty">Belum ada riwayat absensi.</div>';
+ $("historyList").innerHTML=a.length?a.map(row).join(""):'<div class="empty">Belum ada riwayat absensi.</div>';
+ renderStatus();
+}
+function row(x){
+ const dt=new Date(x.date+"T00:00:00").toLocaleDateString("id-ID",{day:"2-digit",month:"short",year:"numeric"});
+ return `<div class="row"><div class="icon">📅</div><div class="grow"><b>${dt}</b><div class="muted">Masuk ${time(x.in)}${x.out?" • Pulang "+time(x.out):""} • 📍 ${x.inLat?`${x.inLat.toFixed(5)}, ${x.inLng.toFixed(5)}`:"-"}</div></div><span class="badge ${x.late?"late":""}">${x.late?"Terlambat":"Hadir"}</span></div>`;
+}
+function openModal(){$("permitDate").value=key();$("modal").classList.add("show")}
+function closeModal(){$("modal").classList.remove("show")}
+$("permitForm").onsubmit=e=>{e.preventDefault();data.permits.push({type:$("permitType").value,date:$("permitDate").value,note:$("permitNote").value});save();closeModal();e.target.reset();render();toast("Pengajuan tersimpan!")}
+function toast(msg){$("toast").textContent=msg;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),2200)}
+function resetData(){if(confirm("Hapus semua data demo?")){data={attendance:[],permits:[]};save();render();toast("Data berhasil direset")}}
+document.querySelectorAll(".nav").forEach(n=>n.onclick=()=>{document.querySelectorAll(".nav,.page").forEach(x=>x.classList.remove("active"));n.classList.add("active");$(n.dataset.page).classList.add("active");render()});
+$("displayName").textContent=user.name;$("profileName").textContent=user.name;
+setInterval(renderClock,1000);renderClock();render();
+</script>
+</body>
+</html>
