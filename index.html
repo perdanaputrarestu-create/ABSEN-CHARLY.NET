@@ -487,7 +487,8 @@ button { border: 0; cursor: pointer; }
 // ==========================================
 const SUPABASE_URL = "https://adrexobwaczskutdemdj.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkcmV4b2J3YWN6c2t1dGRlbWRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk1NjUwNjYsImV4cCI6MjEwNTE0MTA2Nn0.8YTjbCMkXzFANdlUvfF-hXwX0OgVJz2bPNa4suX5q_Q";
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// Variabel diubah ke supabaseClient agar tidak bentrok dengan SDK Supabase
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // State Memory Sementara
 let state = {
@@ -524,12 +525,12 @@ function today(){return state.attendance.find(x => x.userId === state.currentUse
 async function loadInitialData() {
   try {
     // 1. Fetch Offices
-    const { data: offices, error: errOffices } = await supabase.from('offices').select('*');
+    const { data: offices, error: errOffices } = await supabaseClient.from('offices').select('*');
     if(errOffices) throw errOffices;
     state.offices = offices || [];
 
     // 2. Fetch Profiles/Users
-    const { data: profiles, error: errProfiles } = await supabase.from('profiles').select('*');
+    const { data: profiles, error: errProfiles } = await supabaseClient.from('profiles').select('*');
     if(errProfiles) throw errProfiles;
     state.users = (profiles || []).map(p => ({
       id: p.id,
@@ -557,7 +558,7 @@ async function fetchUserData() {
   if(!userObj) return;
 
   // 1. Fetch Attendance
-  let query = supabase.from('attendances').select('*');
+  let query = supabaseClient.from('attendances').select('*');
   if(!userObj.isAdmin) {
     query = query.eq('user_id', state.currentUserId);
   }
@@ -580,7 +581,7 @@ async function fetchUserData() {
   }
 
   // 2. Fetch Permits
-  let permitQuery = supabase.from('permits').select('*');
+  let permitQuery = supabaseClient.from('permits').select('*');
   if(!userObj.isAdmin) {
     permitQuery = permitQuery.eq('user_id', state.currentUserId);
   }
@@ -608,7 +609,7 @@ async function handleLogin(e) {
   btn.disabled = true;
 
   try {
-    const { data: user, error } = await supabase
+    const { data: user, error } = await supabaseClient
       .from('profiles')
       .select('*')
       .eq('id', username)
@@ -809,13 +810,13 @@ async function uploadAttendancePhoto(base64Data, fileName) {
   const blob = await res.blob();
   
   const filePath = `photos/${fileName}.jpg`;
-  const { data, error } = await supabase.storage
+  const { data, error } = await supabaseClient.storage
     .from('attendance-photos')
     .upload(filePath, blob, { contentType: 'image/jpeg', upsert: true });
 
   if (error) throw error;
 
-  const { data: publicUrlData } = supabase.storage
+  const { data: publicUrlData } = supabaseClient.storage
     .from('attendance-photos')
     .getPublicUrl(filePath);
 
@@ -835,7 +836,7 @@ async function submitConfirmation(){
 
     if (pendingAction === "in") {
       const isLate = d.getHours() > 8 || (d.getHours() === 8 && d.getMinutes() > 0);
-      const { error } = await supabase.from('attendances').insert([{
+      const { error } = await supabaseClient.from('attendances').insert([{
         user_id: userObj.id,
         date: key(),
         time_in: d.toISOString(),
@@ -848,7 +849,7 @@ async function submitConfirmation(){
 
       if (error) throw error;
     } else if (pendingAction === "out") {
-      const { error } = await supabase.from('attendances')
+      const { error } = await supabaseClient.from('attendances')
         .update({
           time_out: d.toISOString(),
           out_photo_url: photoUrl
@@ -1015,7 +1016,7 @@ $("permitForm").onsubmit = async e => {
   const note = $("permitNote").value;
 
   try {
-    const { error } = await supabase.from('permits').insert([{
+    const { error } = await supabaseClient.from('permits').insert([{
       user_id: userObj.id,
       type: type,
       date: date,
@@ -1092,7 +1093,7 @@ $("addUserForm").onsubmit = async e => {
   const officeId = $("newUserOffice").value;
 
   try {
-    const { error } = await supabase.from('profiles').insert([{
+    const { error } = await supabaseClient.from('profiles').insert([{
       id: id,
       password: password,
       name: name,
@@ -1121,7 +1122,7 @@ $("addOfficeForm").onsubmit = async e => {
   const radius = parseInt($("newOfficeRadius").value);
 
   try {
-    const { error } = await supabase.from('offices').insert([{
+    const { error } = await supabaseClient.from('offices').insert([{
       id: id,
       name: name,
       lat: lat,
