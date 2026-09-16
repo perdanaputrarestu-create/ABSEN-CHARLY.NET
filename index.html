@@ -67,7 +67,7 @@ button { border: 0; cursor: pointer; }
   overflow-x: hidden;
 }
 
-/* === INITIAL LOADING SCREEN AGAR TIDAK GLITCH === */
+/* INITIAL LOADING SCREEN */
 #appLoadingScreen {
   position: absolute;
   inset: 0;
@@ -91,7 +91,7 @@ button { border: 0; cursor: pointer; }
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* === LOGIN SCREEN === */
+/* LOGIN SCREEN */
 .login-screen {
   display: flex;
   flex-direction: column;
@@ -153,7 +153,7 @@ button { border: 0; cursor: pointer; }
   border-left: 3px solid var(--primary);
 }
 
-/* === TOP HEADER === */
+/* TOP HEADER */
 .header-bg {
   background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
   padding: 28px 24px 45px 24px;
@@ -197,7 +197,7 @@ button { border: 0; cursor: pointer; }
 
 .content { padding: 0 20px; margin-top: 16px; }
 
-/* === CARDS & HERO === */
+/* CARDS & HERO */
 .card { 
   background: var(--surface); 
   border-radius: var(--radius-xl); 
@@ -256,7 +256,7 @@ button { border: 0; cursor: pointer; }
 .btn-go:active { transform: scale(0.98); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); }
 .btn-go:disabled { background: #CBD5E1; box-shadow: none; cursor: not-allowed; }
 
-/* === STATS GRID === */
+/* STATS GRID */
 .grid-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
 .stat-box { 
   background: var(--surface); 
@@ -269,7 +269,7 @@ button { border: 0; cursor: pointer; }
 .stat-box b { font-size: 24px; font-weight: 800; display: block; color: var(--text-main); }
 .stat-box small { font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 
-/* === LIST HISTORY & ADMIN === */
+/* LIST HISTORY & ADMIN */
 .section-title { font-size: 15px; font-weight: 800; margin: 20px 4px 12px; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; letter-spacing: -0.2px; }
 .row { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border-light); }
 .row:last-child { border: 0; }
@@ -305,7 +305,7 @@ button { border: 0; cursor: pointer; }
   border-color: var(--primary);
 }
 
-/* === BOTTOM NAV === */
+/* BOTTOM NAV */
 .bottom-nav { 
   position: fixed; 
   bottom: 16px; 
@@ -336,7 +336,7 @@ button { border: 0; cursor: pointer; }
 .nav-item span { display: block; font-size: 18px; margin-bottom: 3px; }
 .nav-item.active { color: var(--primary-dark); background: var(--surface); box-shadow: var(--shadow-sm); }
 
-/* === MODAL & BOTTOM SHEET === */
+/* MODAL & BOTTOM SHEET */
 .modal { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); display: none; align-items: flex-end; justify-content: center; z-index: 200; backdrop-filter: blur(4px); }
 .modal.show { display: flex; }
 .sheet { 
@@ -433,7 +433,7 @@ button { border: 0; cursor: pointer; }
 
 <div class="app">
 
-  <!-- SPLASH LOADING SCREEN SUPAYA TIDAK KEDIP/GLITCH SAAT REFRESH -->
+  <!-- SPLASH LOADING SCREEN -->
   <div id="appLoadingScreen">
     <div class="spinner"></div>
     <div style="font-size: 14px; font-weight: 600; color: #94A3B8;">Memuat Sesi Cloud...</div>
@@ -688,7 +688,7 @@ button { border: 0; cursor: pointer; }
       </form>
     </div>
 
-    <!-- TAB TAMBAH USER -->
+    <!-- TAB TAMBAH & KELOLA USER -->
     <div id="tabUsers" style="display: none;">
       <form id="addUserForm" style="background: var(--surface-subtle); padding: 16px; border-radius: var(--radius-lg); margin-bottom: 12px; border: 1px solid var(--border-light);">
         <div style="font-weight: 800; margin-bottom: 12px; font-size: 13px;">➕ Tambah Karyawan Baru</div>
@@ -722,7 +722,7 @@ button { border: 0; cursor: pointer; }
       <div id="adminUserList"></div>
     </div>
 
-    <!-- TAB TAMBAH BASECAMP -->
+    <!-- TAB TAMBAH & KELOLA BASECAMP -->
     <div id="tabOffices" style="display: none;">
       <form id="addOfficeForm" style="background: var(--surface-subtle); padding: 16px; border-radius: var(--radius-lg); margin-bottom: 12px; border: 1px solid var(--border-light);">
         <div style="font-weight: 800; margin-bottom: 12px; font-size: 13px;">📍 Tambah Basecamp / Lokasi Kerja</div>
@@ -760,6 +760,102 @@ button { border: 0; cursor: pointer; }
     </div>
 
     <button class="btn-go" style="background:transparent; color:var(--text-muted); box-shadow:none; margin-top:8px;" onclick="closeAdminModal()">Tutup Panel Admin</button>
+  </div>
+</div>
+
+<!-- MODAL EDIT KARYAWAN -->
+<div class="modal" id="editUserModal">
+  <div class="sheet">
+    <div class="grab-bar"></div>
+    <div class="sheet-title">Edit Data Karyawan</div>
+    <form id="editUserForm">
+      <input type="hidden" id="editUserId">
+      <div class="input-group">
+        <label>Nama Lengkap</label>
+        <input type="text" id="editUserName" required>
+      </div>
+      <div class="input-group">
+        <label>Kata Sandi Baru (Kosongkan jika tidak ingin diubah)</label>
+        <input type="password" id="editUserPassword" placeholder="Masukkan password baru">
+      </div>
+      <div class="input-group">
+        <label>Role / Hak Akses</label>
+        <select id="editUserRole">
+          <option value="Teknisi Lapangan">Teknisi Lapangan</option>
+          <option value="Staf Office">Staf Office</option>
+          <option value="Admin System">Admin System</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label>Plotting Basecamp Utama</label>
+        <select id="editUserOffice" required></select>
+      </div>
+      <button class="btn-go" style="padding: 12px; font-size: 13px; margin-top: 8px;">💾 Simpan Perubahan</button>
+      <button type="button" class="btn-go" style="background:transparent; color:var(--text-muted); box-shadow:none; margin-top:4px;" onclick="closeModalId('editUserModal')">Batal</button>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL EDIT BASECAMP -->
+<div class="modal" id="editOfficeModal">
+  <div class="sheet">
+    <div class="grab-bar"></div>
+    <div class="sheet-title">Edit Basecamp</div>
+    <form id="editOfficeForm">
+      <input type="hidden" id="editOfficeId">
+      <div class="input-group">
+        <label>Nama Basecamp/Kantor</label>
+        <input type="text" id="editOfficeName" required>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div class="input-group">
+          <label>Latitude</label>
+          <input type="number" step="any" id="editOfficeLat" required>
+        </div>
+        <div class="input-group">
+          <label>Longitude</label>
+          <input type="number" step="any" id="editOfficeLng" required>
+        </div>
+      </div>
+      <div class="input-group">
+        <label>Radius Absen Maksimal (Meter)</label>
+        <input type="number" id="editOfficeRadius" required>
+      </div>
+      <button class="btn-go" style="padding: 12px; font-size: 13px; margin-top: 8px;">💾 Simpan Perubahan</button>
+      <button type="button" class="btn-go" style="background:transparent; color:var(--text-muted); box-shadow:none; margin-top:4px;" onclick="closeModalId('editOfficeModal')">Batal</button>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL EDIT ABSENSI -->
+<div class="modal" id="editAttendanceModal">
+  <div class="sheet">
+    <div class="grab-bar"></div>
+    <div class="sheet-title">Edit Data Presensi</div>
+    <form id="editAttendanceForm">
+      <input type="hidden" id="editAttId">
+      <div class="input-group">
+        <label>Jam Masuk</label>
+        <input type="datetime-local" id="editAttTimeIn">
+      </div>
+      <div class="input-group">
+        <label>Jam Pulang</label>
+        <input type="datetime-local" id="editAttTimeOut">
+      </div>
+      <div class="input-group">
+        <label>Status Keterlambatan</label>
+        <select id="editAttIsLate">
+          <option value="false">Tepat Waktu (Hadir)</option>
+          <option value="true">Terlambat</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label>Durasi Lembur (Menit)</label>
+        <input type="number" id="editAttOvertime" min="0">
+      </div>
+      <button class="btn-go" style="padding: 12px; font-size: 13px; margin-top: 8px;">💾 Simpan Perubahan</button>
+      <button type="button" class="btn-go" style="background:transparent; color:var(--text-muted); box-shadow:none; margin-top:4px;" onclick="closeModalId('editAttendanceModal')">Batal</button>
+    </form>
   </div>
 </div>
 
@@ -807,6 +903,7 @@ function now(){return new Date()}
 function key(d=now()){return d.toISOString().slice(0,10)}
 function time(d){return d ? new Date(d).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit",second:"2-digit"}) : '-'}
 function today(){return state.attendance.find(x => x.userId === state.currentUserId && x.date === key())}
+function closeModalId(id) { $(id).classList.remove("show"); }
 
 // ==========================================
 // LOAD DATA FROM SUPABASE
@@ -840,7 +937,6 @@ async function loadInitialData() {
     console.error("Gagal memuat data dari Supabase:", err);
     toast("❌ Gagal terhubung ke Database Supabase!");
   } finally {
-    // Sembunyikan loading screen splash & render aplikasi utama
     const splash = $("appLoadingScreen");
     if(splash) {
       splash.style.opacity = '0';
@@ -1336,7 +1432,13 @@ function renderAdminMonitoring() {
         <div class="muted">Masuk: ${time(x.in)} ${x.out ? '• Pulang: '+time(x.out) : ''}</div>
         <div style="font-size:11px; color:var(--text-muted)">📍 ${x.locationName} ${x.overtimeMinutes ? '• ⏱️ Lembur: '+x.overtimeMinutes+' m' : ''}</div>
       </div>
-      <span class="badge ${x.late ? 'late' : ''}">${x.late ? 'Terlambat' : 'Hadir'}</span>
+      <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+        <span class="badge ${x.late ? 'late' : ''}">${x.late ? 'Terlambat' : 'Hadir'}</span>
+        <div style="display:flex; gap:4px; margin-top:4px;">
+          <button onclick="openEditAttendanceModal('${x.id}')" style="background:var(--surface-subtle); color:var(--text-main); border:1px solid var(--border-light); font-size:10px; font-weight:700; border-radius:6px; padding:3px 8px;">✏️ Edit</button>
+          <button onclick="deleteAttendance('${x.id}')" style="background:none; border:none; color:var(--danger); font-size:10px; font-weight:700; cursor:pointer; padding:2px 0;">Hapus</button>
+        </div>
+      </div>
     </div>
   `).join("");
 }
@@ -1415,7 +1517,7 @@ $("permitForm").onsubmit = async e => {
   }
 };
 
-/* === ADMIN FUNCTIONS === */
+/* ADMIN FUNCTIONS */
 function openAdminModal(){
   renderAdminPanel();
   $("adminModal").classList.add("show");
@@ -1459,7 +1561,10 @@ function renderAdminPanel() {
         <b>${u.name} (${u.id})</b>
         <div class="muted">${u.role} • Basecamp: <b>${off.name}</b></div>
       </div>
-      ${u.isAdmin ? '<span class="badge admin">Admin</span>' : '<span class="badge">Pekerja</span>'}
+      <div style="display:flex; gap:6px;">
+        <button onclick="openEditUserModal('${u.id}')" style="background:var(--primary-light); color:var(--primary-dark); padding:6px 10px; border-radius:8px; font-weight:700; font-size:11px;">✏️ Edit</button>
+        ${u.isAdmin ? '' : `<button onclick="deleteUser('${u.id}')" style="background:#FEF2F2; color:var(--danger); padding:6px 10px; border-radius:8px; font-weight:700; font-size:11px;">🗑️ Hapus</button>`}
+      </div>
     </div>`;
   }).join("");
 
@@ -1469,8 +1574,51 @@ function renderAdminPanel() {
         <b>${o.name} (${o.id})</b>
         <div class="muted">Lat: ${o.lat}, Lng: ${o.lng} (Radius: ${o.radius}m)</div>
       </div>
+      <div style="display:flex; gap:6px;">
+        <button onclick="openEditOfficeModal('${o.id}')" style="background:var(--primary-light); color:var(--primary-dark); padding:6px 10px; border-radius:8px; font-weight:700; font-size:11px;">✏️ Edit</button>
+        <button onclick="deleteOffice('${o.id}')" style="background:#FEF2F2; color:var(--danger); padding:6px 10px; border-radius:8px; font-weight:700; font-size:11px;">🗑️ Hapus</button>
+      </div>
     </div>`;
   }).join("");
+}
+
+async function deleteUser(userId) {
+  if(!confirm(`Yakin ingin menghapus karyawan dengan ID: ${userId}?`)) return;
+  try {
+    const { error } = await supabaseClient.from('profiles').delete().eq('id', userId);
+    if(error) throw error;
+    toast("✅ Karyawan berhasil dihapus!");
+    await loadInitialData();
+    renderAdminPanel();
+  } catch(err) {
+    toast("❌ Gagal menghapus karyawan: " + err.message);
+  }
+}
+
+async function deleteOffice(officeId) {
+  if(!confirm(`Yakin ingin menghapus basecamp ID: ${officeId}?`)) return;
+  try {
+    const { error } = await supabaseClient.from('offices').delete().eq('id', officeId);
+    if(error) throw error;
+    toast("✅ Basecamp berhasil dihapus!");
+    await loadInitialData();
+    renderAdminPanel();
+  } catch(err) {
+    toast("❌ Gagal menghapus basecamp: " + err.message);
+  }
+}
+
+async function deleteAttendance(attId) {
+  if(!confirm("Yakin ingin menghapus data absensi ini?")) return;
+  try {
+    const { error } = await supabaseClient.from('attendances').delete().eq('id', attId);
+    if(error) throw error;
+    toast("✅ Data absensi dihapus!");
+    await fetchUserData();
+    renderApp();
+  } catch(err) {
+    toast("❌ Gagal menghapus absensi: " + err.message);
+  }
 }
 
 $("shiftSettingsForm").onsubmit = e => {
@@ -1541,6 +1689,131 @@ $("addOfficeForm").onsubmit = async e => {
   }
 };
 
+/* LOGIKA EDIT DATA (KARYAWAN, BASECAMP, ABSENSI) */
+function openEditUserModal(userId) {
+  const user = state.users.find(u => u.id === userId);
+  if (!user) return;
+
+  $("editUserId").value = user.id;
+  $("editUserName").value = user.name;
+  $("editUserPassword").value = ""; 
+  $("editUserRole").value = user.role;
+
+  $("editUserOffice").innerHTML = state.offices.map(o => 
+    `<option value="${o.id}" ${o.id === user.officeId ? 'selected' : ''}>${o.name}</option>`
+  ).join("");
+
+  $("editUserModal").classList.add("show");
+}
+
+$("editUserForm").onsubmit = async e => {
+  e.preventDefault();
+  const id = $("editUserId").value;
+  const name = $("editUserName").value.trim();
+  const password = $("editUserPassword").value.trim();
+  const role = $("editUserRole").value;
+  const officeId = $("editUserOffice").value;
+
+  const updatePayload = {
+    name: name,
+    role: role,
+    office_id: officeId,
+    is_admin: role === "Admin System"
+  };
+
+  if (password !== "") updatePayload.password = password;
+
+  try {
+    const { error } = await supabaseClient.from('profiles').update(updatePayload).eq('id', id);
+    if (error) throw error;
+
+    closeModalId("editUserModal");
+    toast("✅ Data karyawan berhasil diperbarui!");
+    await loadInitialData();
+    renderAdminPanel();
+  } catch (err) {
+    toast("❌ Gagal update karyawan: " + err.message);
+  }
+};
+
+function openEditOfficeModal(officeId) {
+  const office = state.offices.find(o => o.id === officeId);
+  if (!office) return;
+
+  $("editOfficeId").value = office.id;
+  $("editOfficeName").value = office.name;
+  $("editOfficeLat").value = office.lat;
+  $("editOfficeLng").value = office.lng;
+  $("editOfficeRadius").value = office.radius;
+
+  $("editOfficeModal").classList.add("show");
+}
+
+$("editOfficeForm").onsubmit = async e => {
+  e.preventDefault();
+  const id = $("editOfficeId").value;
+  const name = $("editOfficeName").value.trim();
+  const lat = parseFloat($("editOfficeLat").value);
+  const lng = parseFloat($("editOfficeLng").value);
+  const radius = parseInt($("editOfficeRadius").value);
+
+  try {
+    const { error } = await supabaseClient.from('offices').update({ name, lat, lng, radius }).eq('id', id);
+    if (error) throw error;
+
+    closeModalId("editOfficeModal");
+    toast("✅ Basecamp berhasil diperbarui!");
+    await loadInitialData();
+    renderAdminPanel();
+  } catch (err) {
+    toast("❌ Gagal update basecamp: " + err.message);
+  }
+};
+
+function openEditAttendanceModal(attId) {
+  const att = state.attendance.find(a => a.id === attId);
+  if (!att) return;
+
+  $("editAttId").value = att.id;
+  $("editAttIsLate").value = att.late ? "true" : "false";
+  $("editAttOvertime").value = att.overtimeMinutes || 0;
+
+  if(att.in) $("editAttTimeIn").value = new Date(att.in).toISOString().slice(0, 16);
+  if(att.out) $("editAttTimeOut").value = new Date(att.out).toISOString().slice(0, 16);
+  else $("editAttTimeOut").value = "";
+
+  $("editAttendanceModal").classList.add("show");
+}
+
+$("editAttendanceForm").onsubmit = async e => {
+  e.preventDefault();
+  const id = $("editAttId").value;
+  const inVal = $("editAttTimeIn").value;
+  const outVal = $("editAttTimeOut").value;
+  const isLate = $("editAttIsLate").value === "true";
+  const overtime = parseInt($("editAttOvertime").value) || 0;
+
+  const updateData = {
+    is_late: isLate,
+    overtime_minutes: overtime
+  };
+
+  if (inVal) updateData.time_in = new Date(inVal).toISOString();
+  if (outVal) updateData.time_out = new Date(outVal).toISOString();
+
+  try {
+    const { error } = await supabaseClient.from('attendances').update(updateData).eq('id', id);
+    if (error) throw error;
+
+    closeModalId("editAttendanceModal");
+    toast("✅ Data presensi berhasil dikoreksi!");
+    await fetchUserData();
+    renderApp();
+  } catch (err) {
+    toast("❌ Gagal koreksi presensi: " + err.message);
+  }
+};
+
 function toast(msg){$("toast").textContent=msg;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),2500)}
 
 document.querySelectorAll(".nav-item").forEach(n=>n.onclick=()=>{
@@ -1557,8 +1830,6 @@ document.querySelectorAll(".nav-item").forEach(n=>n.onclick=()=>{
 
 setInterval(renderClock,1000);
 renderClock();
-
-// Inisialisasi dijalankan saat pertama kali file dibuka/di-refresh
 loadInitialData();
 </script>
 </body>
