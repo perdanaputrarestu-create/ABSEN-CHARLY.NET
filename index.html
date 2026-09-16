@@ -2,199 +2,406 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#00AA13">
-<title>AbsenKu Pro — Multi-User Login System (Supabase Connected)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0F172A">
+<title>Absensi Charly.NET — Modern Attendance System</title>
+<!-- Google Fonts & Leaflet -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <!-- Supabase JS SDK v2 -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 :root {
-  --gojek-green: #00AA13;
-  --gojek-green-dark: #00880F;
-  --gojek-green-light: #E6F6E7;
-  --bg: #F4F5F7;
-  --card: #FFFFFF;
-  --text: #1C1E21;
-  --muted: #6C727F;
-  --red: #ED2736;
-  --yellow: #FFB800;
-  --line: #EEF0F4;
-  --shadow: 0 8px 24px rgba(28, 30, 33, 0.08);
+  --primary: #10B981;
+  --primary-dark: #059669;
+  --primary-light: #ECFDF5;
+  --accent: #6366F1;
+  --bg-app: #F8FAFC;
+  --surface: #FFFFFF;
+  --surface-subtle: #F1F5F9;
+  --text-main: #0F172A;
+  --text-muted: #64748B;
+  --border-light: #E2E8F0;
+  --danger: #EF4444;
+  --warning: #F59E0B;
+  --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 10px 30px -4px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  --radius-xl: 24px;
+  --radius-lg: 16px;
+  --radius-md: 12px;
 }
 
-* { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-body { margin: 0; background: var(--bg); color: var(--text); -webkit-tap-highlight-color: transparent; }
-button, input, select, textarea { font: inherit; }
+* { 
+  box-sizing: border-box; 
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+body { 
+  margin: 0; 
+  background: #0F172A; 
+  color: var(--text-main); 
+  -webkit-tap-highlight-color: transparent;
+  display: flex;
+  justify-content: center;
+  min-height: 100dvh;
+}
+
+button, input, select, textarea { font: inherit; outline: none; }
 button { border: 0; cursor: pointer; }
 
-.app { max-width: 480px; margin: 0 auto; min-height: 100dvh; padding-bottom: 90px; background: var(--bg); position: relative; }
+.app { 
+  width: 100%;
+  max-width: 480px; 
+  min-height: 100dvh; 
+  padding-bottom: 100px; 
+  background: var(--bg-app); 
+  position: relative;
+  box-shadow: 0 0 50px rgba(0,0,0,0.3);
+  overflow-x: hidden;
+}
 
-/* === LOGIN PAGE CONTAINER === */
+/* === LOGIN SCREEN === */
 .login-screen {
   display: flex;
   flex-direction: column;
   justify-content: center;
   min-height: 100dvh;
-  padding: 24px 20px;
-  background: linear-gradient(180deg, #00AA13 0%, #00880F 100%);
+  padding: 32px 24px;
+  background: radial-gradient(circle at top right, #1E293B, #0F172A);
   color: #fff;
-  text-align: center;
+  position: relative;
 }
-.login-header { margin-bottom: 32px; }
-.login-header h1 { font-size: 32px; font-weight: 900; margin: 0; }
-.login-header h1 span { color: #80E28A; }
-.login-header p { font-size: 14px; opacity: 0.9; margin-top: 6px; }
+
+.login-screen::before {
+  content: '';
+  position: absolute;
+  top: -10%;
+  right: -10%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(16,185,129,0.15) 0%, rgba(0,0,0,0) 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.login-header { text-align: center; margin-bottom: 36px; }
+.login-header .logo-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  border-radius: 20px;
+  font-size: 32px;
+  margin-bottom: 16px;
+  box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+}
+
+.login-header h1 { font-size: 28px; font-weight: 800; margin: 0; letter-spacing: -0.5px; }
+.login-header h1 span { color: var(--primary); }
+.login-header p { font-size: 14px; color: #94A3B8; margin-top: 6px; }
 
 .login-card {
-  background: var(--card);
-  border-radius: 24px;
-  padding: 24px 20px;
-  box-shadow: 0 12px 32px rgba(0,0,0,0.15);
-  color: var(--text);
-  text-align: left;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px);
+  border-radius: var(--radius-xl);
+  padding: 28px 24px;
+  box-shadow: var(--shadow-lg);
+  color: var(--text-main);
 }
 
 .login-hint {
-  background: #F0F2F5;
-  border-radius: 12px;
-  padding: 10px 12px;
-  font-size: 11px;
-  color: var(--muted);
-  margin-top: 14px;
-  line-height: 1.4;
+  background: var(--surface-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 18px;
+  line-height: 1.5;
+  border-left: 3px solid var(--primary);
 }
 
 /* === TOP HEADER === */
 .header-bg {
-  background: linear-gradient(135deg, #00AA13 0%, #00880F 100%);
-  padding: 24px 20px 48px 20px;
-  border-radius: 0 0 28px 28px;
+  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+  padding: 28px 24px 60px 24px;
+  border-radius: 0 0 32px 32px;
   color: #fff;
+  position: relative;
 }
-.top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-.brand { font-size: 20px; font-weight: 900; letter-spacing: -0.5px; }
-.brand span { color: #80E28A; }
-.avatar { width: 40px; height: 40px; border-radius: 50%; background: #fff; color: var(--gojek-green); font-weight: 800; display: grid; place-items: center; border: 2px solid rgba(255,255,255,0.3); }
 
-.user-greeting { font-size: 13px; opacity: 0.9; }
-.user-name { font-size: 22px; font-weight: 800; margin-top: 2px; }
+.top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.brand { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px; }
+.brand-dot { width: 10px; height: 10px; background: var(--primary); border-radius: 50%; display: inline-block; box-shadow: 0 0 10px var(--primary); }
+.brand span { color: var(--primary); }
 
-.content { padding: 0 16px; margin-top: -32px; }
+.avatar { 
+  width: 44px; 
+  height: 44px; 
+  border-radius: 14px; 
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: #fff; 
+  font-weight: 800; 
+  display: grid; 
+  place-items: center; 
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+  font-size: 15px;
+}
+
+.user-greeting { font-size: 13px; color: #94A3B8; font-weight: 500; }
+.user-name { font-size: 22px; font-weight: 800; margin-top: 2px; letter-spacing: -0.3px; }
+
+.role-badge-pill {
+  font-size: 11px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #38BDF8;
+  padding: 4px 10px;
+  border-radius: 20px;
+  display: inline-block;
+  margin-top: 6px;
+  font-weight: 600;
+}
+
+.content { padding: 0 20px; margin-top: -36px; }
 
 /* === CARDS & HERO === */
-.card { background: var(--card); border-radius: 20px; padding: 18px; box-shadow: var(--shadow); margin-bottom: 14px; }
-.hero-card { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.clock-display { font-size: 30px; font-weight: 900; letter-spacing: -1px; color: var(--text); }
-.date-display { font-size: 12px; color: var(--muted); margin-bottom: 4px; font-weight: 600; }
-.status-tag { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: var(--gojek-green); background: var(--gojek-green-light); padding: 4px 10px; border-radius: 20px; margin-top: 6px; }
+.card { 
+  background: var(--surface); 
+  border-radius: var(--radius-xl); 
+  padding: 20px; 
+  box-shadow: var(--shadow-md); 
+  margin-bottom: 16px; 
+  border: 1px solid var(--border-light);
+}
+
+.hero-card { display: flex; align-items: center; justify-content: space-between; }
+.clock-display { font-size: 32px; font-weight: 800; letter-spacing: -1px; color: var(--text-main); font-variant-numeric: tabular-nums; }
+.date-display { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.status-tag { 
+  display: inline-flex; 
+  align-items: center; 
+  gap: 6px; 
+  font-size: 12px; 
+  font-weight: 700; 
+  color: var(--primary-dark); 
+  background: var(--primary-light); 
+  padding: 5px 12px; 
+  border-radius: 20px; 
+  margin-top: 8px; 
+}
 
 .assigned-basecamp-badge {
-  background: #F0F2F5;
-  border: 1px dashed var(--muted);
-  border-radius: 12px;
-  padding: 10px 14px;
-  margin-bottom: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  margin-bottom: 14px;
   font-size: 13px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-go {
-  background: var(--gojek-green);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
   color: #fff;
-  font-weight: 800;
-  border-radius: 25px;
-  padding: 14px 20px;
+  font-weight: 700;
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
   width: 100%;
   font-size: 15px;
-  box-shadow: 0 6px 18px rgba(0,170,19,0.3);
-  transition: transform 0.1s;
+  box-shadow: 0 10px 20px -5px rgba(16, 185, 129, 0.4);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   margin-top: 8px;
 }
-.btn-go:active { transform: scale(0.97); }
-.btn-go:disabled { background: #C4C9D3; box-shadow: none; cursor: not-allowed; }
+.btn-go:active { transform: scale(0.98); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); }
+.btn-go:disabled { background: #CBD5E1; box-shadow: none; cursor: not-allowed; }
 
 /* === STATS GRID === */
-.grid-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
-.stat-box { background: #fff; border-radius: 16px; padding: 14px 10px; text-align: center; box-shadow: var(--shadow); }
-.stat-box b { font-size: 22px; font-weight: 800; display: block; color: var(--text); }
-.stat-box small { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; }
+.grid-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+.stat-box { 
+  background: var(--surface); 
+  border-radius: var(--radius-lg); 
+  padding: 16px 12px; 
+  text-align: center; 
+  box-shadow: var(--shadow-sm); 
+  border: 1px solid var(--border-light);
+}
+.stat-box b { font-size: 24px; font-weight: 800; display: block; color: var(--text-main); }
+.stat-box small { font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 
 /* === LIST HISTORY & ADMIN === */
-.section-title { font-size: 16px; font-weight: 800; margin: 18px 4px 10px; color: var(--text); display: flex; justify-content: space-between; align-items: center; }
-.row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.section-title { font-size: 15px; font-weight: 800; margin: 20px 4px 12px; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; letter-spacing: -0.2px; }
+.row { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border-light); }
 .row:last-child { border: 0; }
-.icon-box { width: 42px; height: 42px; border-radius: 14px; background: #F0F2F5; display: grid; place-items: center; font-size: 18px; }
+.icon-box { 
+  width: 44px; 
+  height: 44px; 
+  border-radius: 14px; 
+  background: var(--surface-subtle); 
+  display: grid; 
+  place-items: center; 
+  font-size: 18px; 
+  flex-shrink: 0;
+}
 .grow { flex: 1; }
-.muted { color: var(--muted); font-size: 12px; margin-top: 2px; }
-.badge { font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 12px; background: var(--gojek-green-light); color: var(--gojek-green); }
-.badge.late { background: #FFF4E5; color: #D97706; }
-.badge.admin { background: #E0F2FE; color: #0284C7; }
+.muted { color: var(--text-muted); font-size: 12px; margin-top: 3px; font-weight: 500; }
+.badge { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 8px; background: var(--primary-light); color: var(--primary-dark); }
+.badge.late { background: #FEF3C7; color: #D97706; }
+.badge.overtime { background: #F3E8FF; color: #7E22CE; }
+.badge.admin { background: #E0F2FE; color: #0369A1; }
 
-.input-group { margin-bottom: 12px; text-align: left; }
-.input-group label { font-size: 12px; font-weight: 700; display: block; margin-bottom: 4px; }
-.input-group input, .input-group select { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--line); background: #fff; }
+.input-group { margin-bottom: 14px; text-align: left; }
+.input-group label { font-size: 12px; font-weight: 700; display: block; margin-bottom: 6px; color: var(--text-main); }
+.input-group input, .input-group select { 
+  width: 100%; 
+  padding: 12px 14px; 
+  border-radius: var(--radius-md); 
+  border: 1px solid var(--border-light); 
+  background: var(--surface); 
+  color: var(--text-main);
+  transition: border-color 0.2s;
+}
+.input-group input:focus, .input-group select:focus {
+  border-color: var(--primary);
+}
 
 /* === BOTTOM NAV === */
-.bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: min(480px, 100%); background: #fff; border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(3, 1fr); padding: 8px 0 calc(8px + env(safe-area-inset-bottom)); z-index: 100; }
+.bottom-nav { 
+  position: fixed; 
+  bottom: 16px; 
+  left: 50%; 
+  transform: translateX(-50%); 
+  width: calc(min(480px, 100%) - 32px); 
+  background: rgba(255, 255, 255, 0.85); 
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 24px;
+  display: grid; 
+  grid-template-columns: repeat(3, 1fr); 
+  padding: 8px; 
+  z-index: 100; 
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
 .bottom-nav.admin-mode { grid-template-columns: repeat(4, 1fr); }
-.nav-item { background: none; color: var(--muted); font-size: 11px; font-weight: 700; text-align: center; }
-.nav-item span { display: block; font-size: 20px; margin-bottom: 2px; }
-.nav-item.active { color: var(--gojek-green); }
+.nav-item { 
+  background: none; 
+  color: var(--text-muted); 
+  font-size: 11px; 
+  font-weight: 700; 
+  text-align: center; 
+  padding: 8px 0;
+  border-radius: 16px;
+  transition: all 0.2s;
+}
+.nav-item span { display: block; font-size: 18px; margin-bottom: 3px; }
+.nav-item.active { color: var(--primary-dark); background: var(--surface); box-shadow: var(--shadow-sm); }
 
 /* === MODAL & BOTTOM SHEET === */
-.modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: flex-end; justify-content: center; z-index: 200; backdrop-filter: blur(2px); }
+.modal { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); display: none; align-items: flex-end; justify-content: center; z-index: 200; backdrop-filter: blur(4px); }
 .modal.show { display: flex; }
-.sheet { width: min(480px, 100%); max-height: 90dvh; overflow-y: auto; background: #fff; border-radius: 28px 28px 0 0; padding: 12px 20px calc(24px + env(safe-area-inset-bottom)); animation: slideUp 0.25s cubic-bezier(0, 0, 0.2, 1); }
+.sheet { 
+  width: min(480px, 100%); 
+  max-height: 88dvh; 
+  overflow-y: auto; 
+  background: var(--surface); 
+  border-radius: 32px 32px 0 0; 
+  padding: 16px 24px calc(28px + env(safe-area-inset-bottom)); 
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+  box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
+}
 @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-.grab-bar { width: 36px; height: 5px; background: #E2E8F0; border-radius: 99px; margin: 0 auto 16px; }
-.sheet-title { font-size: 18px; font-weight: 800; margin-bottom: 14px; text-align: center; }
+.grab-bar { width: 40px; height: 5px; background: #E2E8F0; border-radius: 99px; margin: 0 auto 20px; }
+.sheet-title { font-size: 18px; font-weight: 800; margin-bottom: 16px; text-align: center; color: var(--text-main); }
 
 /* CAMERA & MAP UI */
-.camera-wrap { position: relative; width: 100%; border-radius: 20px; overflow: hidden; background: #000; margin-bottom: 12px; }
+.camera-wrap { position: relative; width: 100%; border-radius: var(--radius-lg); overflow: hidden; background: #000; margin-bottom: 14px; box-shadow: var(--shadow-md); }
 .camera-wrap video { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; transform: scaleX(-1); }
 .camera-wrap canvas { display: none; }
 .face-guide { position: absolute; inset: 15% 22%; border: 2px dashed rgba(255,255,255,0.7); border-radius: 50%; pointer-events: none; }
 
-.mini-map { height: 150px; border-radius: 16px; overflow: hidden; position: relative; margin: 12px 0; border: 1px solid var(--line); }
+.mini-map { height: 140px; border-radius: var(--radius-lg); overflow: hidden; position: relative; margin: 14px 0; border: 1px solid var(--border-light); }
 #miniMap { height: 100%; width: 100%; }
-.map-refresh { position: absolute; z-index: 500; right: 10px; top: 10px; border: 0; background: #fff; border-radius: 10px; width: 36px; height: 36px; font-size: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); display: grid; place-items: center; }
+.map-refresh { position: absolute; z-index: 500; right: 10px; top: 10px; border: 0; background: var(--surface); border-radius: 10px; width: 36px; height: 36px; font-size: 16px; box-shadow: var(--shadow-md); display: grid; place-items: center; }
 
-.gps-info { background: #F8FAFC; border: 1px solid var(--line); border-radius: 14px; padding: 12px; font-size: 13px; }
+.gps-info { background: var(--surface-subtle); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 14px; font-size: 13px; }
 .gps-header { display: flex; align-items: center; justify-content: space-between; }
-.gps-status-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--gojek-green); display: inline-block; margin-right: 6px; }
-.gps-status-dot.warn { background: var(--red); }
-.gps-detail-text { margin-top: 6px; font-size: 12px; font-weight: 700; color: var(--muted); }
+.gps-status-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--primary); display: inline-block; margin-right: 6px; }
+.gps-status-dot.warn { background: var(--danger); }
+.gps-detail-text { margin-top: 6px; font-size: 12px; font-weight: 700; color: var(--text-muted); }
 
 /* CONFIRM MODAL */
-.confirm-photo { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: 18px; margin-bottom: 12px; }
-.info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
+.confirm-photo { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: var(--radius-lg); margin-bottom: 14px; box-shadow: var(--shadow-md); }
+.info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-light); font-size: 13px; }
 .info-row:last-child { border: 0; }
-.info-label { color: var(--muted); }
-.info-val { font-weight: 700; }
+.info-label { color: var(--text-muted); }
+.info-val { font-weight: 700; color: var(--text-main); }
 
-.toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #1C1E21; color: #fff; padding: 10px 18px; border-radius: 25px; font-size: 13px; font-weight: 600; opacity: 0; transition: opacity 0.2s; z-index: 300; pointer-events: none; text-align: center; }
-.toast.show { opacity: 1; }
+.toast { 
+  position: fixed; 
+  top: 24px; 
+  left: 50%; 
+  transform: translateX(-50%) translateY(-20px); 
+  background: #0F172A; 
+  color: #fff; 
+  padding: 12px 22px; 
+  border-radius: 30px; 
+  font-size: 13px; 
+  font-weight: 600; 
+  opacity: 0; 
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+  z-index: 300; 
+  pointer-events: none; 
+  text-align: center; 
+  box-shadow: var(--shadow-lg);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 .page { display: none; }
 .page.active { display: block; }
 
-.role-badge-pill {
-  font-size: 11px;
-  background: rgba(255, 255, 255, 0.2);
-  padding: 3px 8px;
-  border-radius: 8px;
-  display: inline-block;
-  margin-top: 2px;
+/* ADMIN TAB SCROLLABLE */
+.admin-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--border-light);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  scrollbar-width: none;
+}
+.admin-tabs::-webkit-scrollbar { display: none; }
+
+.admin-tab-btn {
+  padding: 8px 14px;
+  font-weight: 700;
+  font-size: 13px;
+  border-radius: 20px;
+  background: var(--surface-subtle);
+  color: var(--text-muted);
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+.admin-tab-btn.active {
+  background: var(--text-main);
+  color: #fff;
 }
 </style>
 </head>
@@ -205,29 +412,30 @@ button { border: 0; cursor: pointer; }
   <!-- LAYAR LOGIN USERNAME & PASSWORD -->
   <div id="loginScreen" class="login-screen">
     <div class="login-header">
-      <h1>Absen<span>Ku Pro</span></h1>
+      <div class="logo-badge">⚡</div>
+      <h1>Absensi <span>Charly.NET</span></h1>
       <p>Sistem Presensi Cloud & Lokasi Realtime</p>
     </div>
     
     <div class="login-card">
-      <h3 style="margin: 0 0 16px; font-size: 18px; font-weight: 800; text-align: center;">Masuk Akun</h3>
+      <h3 style="margin: 0 0 18px; font-size: 18px; font-weight: 800; text-align: center;">Masuk Akun</h3>
       <form id="loginForm" onsubmit="handleLogin(event)">
         <div class="input-group">
           <label for="inputUsername">Username / NIK</label>
-          <input type="text" id="inputUsername" placeholder="Contoh: USR001 atau USR002" required autocomplete="username">
+          <input type="text" id="inputUsername" placeholder="Contoh: USR001" required autocomplete="username">
         </div>
         <div class="input-group">
           <label for="inputPassword">Kata Sandi / PIN</label>
           <input type="password" id="inputPassword" placeholder="Masukkan kata sandi" required autocomplete="current-password">
         </div>
-        <button type="submit" class="btn-go" style="margin-top: 16px;" id="loginBtn">
+        <button type="submit" class="btn-go" style="margin-top: 18px;" id="loginBtn">
           🔑 Masuk Sistem
         </button>
       </form>
 
       <div class="login-hint">
         <b>Status Database Cloud:</b><br>
-        Terhubung langsung dengan Cloud Supabase.
+        Terhubung secara aman dengan Supabase Realtime Engine.
       </div>
     </div>
   </div>
@@ -237,7 +445,7 @@ button { border: 0; cursor: pointer; }
     <!-- TOP HEADER -->
     <div class="header-bg">
       <div class="top-bar">
-        <div class="brand">Absen<span>Ku Pro</span></div>
+        <div class="brand"><span class="brand-dot"></span> Charly<span>.NET</span></div>
         <div class="avatar" id="avatar">--</div>
       </div>
       <div class="user-greeting">Selamat beraktivitas 👋</div>
@@ -259,10 +467,10 @@ button { border: 0; cursor: pointer; }
         <!-- BASECAMP TERKUNCI ADMIN -->
         <div class="assigned-basecamp-badge">
           <div>
-            <small style="color:var(--muted); font-size:10px; font-weight:700; text-transform:uppercase; display:block;">Lokasi Absen Ditentukan Admin:</small>
-            <strong id="assignedBasecampName" style="color:var(--text); font-size:14px;">-</strong>
+            <small style="color:var(--text-muted); font-size:10px; font-weight:700; text-transform:uppercase; display:block; letter-spacing: 0.5px;">Lokasi Presensi Anda:</small>
+            <strong id="assignedBasecampName" style="color:var(--text-main); font-size:14px;">-</strong>
           </div>
-          <span style="font-size:18px;">📍</span>
+          <span style="font-size:20px;">📍</span>
         </div>
 
         <button class="btn-go" id="absenBtn" onclick="openAttendance()">
@@ -273,7 +481,7 @@ button { border: 0; cursor: pointer; }
         <div class="grid-stats">
           <div class="stat-box"><b id="hadir">0</b><small>Hadir</small></div>
           <div class="stat-box"><b id="terlambat">0</b><small>Telat</small></div>
-          <div class="stat-box"><b id="izin">0</b><small>Izin</small></div>
+          <div class="stat-box"><b id="lemburCount">0</b><small>Lembur</small></div>
         </div>
 
         <div class="section-title">Riwayat Saya</div>
@@ -284,7 +492,7 @@ button { border: 0; cursor: pointer; }
       <main id="history" class="page">
         <div class="section-title">
           <span>Semua Riwayat Saya</span>
-          <button onclick="exportCSV()" style="font-size:12px; background:var(--gojek-green-light); color:var(--gojek-green); padding:6px 12px; border-radius:12px; font-weight:700;">📥 CSV</button>
+          <button onclick="exportCSV()" style="font-size:12px; background:var(--primary-light); color:var(--primary-dark); padding:6px 12px; border-radius:10px; font-weight:700;">📥 Export CSV</button>
         </div>
         <section class="card" id="historyList"></section>
       </main>
@@ -293,13 +501,16 @@ button { border: 0; cursor: pointer; }
       <main id="adminDashboard" class="page">
         <div class="section-title">Rekap Monitoring Absensi Karyawan</div>
         <section class="card">
-          <div style="font-weight: 800; font-size: 14px; margin-bottom: 8px;" id="adminTodayTitle">Presensi Hari Ini</div>
+          <div style="font-weight: 800; font-size: 14px; margin-bottom: 12px;" id="adminTodayTitle">Presensi Hari Ini</div>
           <div id="allTodayLogs"></div>
         </section>
 
+        <div class="section-title">Persetujuan Izin / Sakit</div>
+        <section class="card" id="adminPermitsList"></section>
+
         <div class="section-title">Kelola Sistem & Plotting</div>
         <section class="card">
-          <button class="btn-go" style="background:#E0F2FE; color:#0284C7; box-shadow:none;" onclick="openAdminModal()">⚙️ Kelola Karyawan & Basecamp</button>
+          <button class="btn-go" style="background:var(--surface-subtle); color:var(--text-main); box-shadow:none; border: 1px solid var(--border-light);" onclick="openAdminModal()">⚙️ Panel Kontrol Admin</button>
         </section>
       </main>
 
@@ -307,13 +518,13 @@ button { border: 0; cursor: pointer; }
       <main id="profile" class="page">
         <div class="section-title">Profil & Sesi Log</div>
         <section class="card" style="text-align:center;">
-          <div class="avatar" style="width:60px;height:60px;margin:auto;font-size:20px;" id="profileAvatar">--</div>
-          <h3 id="profileName" style="margin:10px 0 2px;">-</h3>
-          <p class="muted" id="profileRole" style="margin:0 0 16px;">-</p>
+          <div class="avatar" style="width:64px;height:64px;margin:auto;font-size:22px; border-radius: 20px;" id="profileAvatar">--</div>
+          <h3 id="profileName" style="margin:14px 0 2px; font-weight: 800;">-</h3>
+          <p class="muted" id="profileRole" style="margin:0 0 20px;">-</p>
           
-          <button class="btn-go" style="background:#F0F2F5; color:var(--text); box-shadow:none; margin-top:10px;" onclick="openModal()">📝 Ajukan Izin / Sakit</button>
-          <button class="btn-go" style="background:#E6F6E7; color:var(--gojek-green); box-shadow:none; margin-top:8px;" onclick="exportPDF()">📄 Download PDF Saya</button>
-          <button class="btn-go" style="background:#FEE2E2; color:var(--red); box-shadow:none; margin-top:16px;" onclick="handleLogout()">🚪 Keluar / Logout</button>
+          <button class="btn-go" style="background:var(--surface-subtle); color:var(--text-main); box-shadow:none; margin-top:10px; border:1px solid var(--border-light);" onclick="openModal()">📝 Ajukan Izin / Sakit</button>
+          <button class="btn-go" style="background:var(--primary-light); color:var(--primary-dark); box-shadow:none; margin-top:8px;" onclick="exportPDF()">📄 Download PDF Saya</button>
+          <button class="btn-go" style="background:#FEF2F2; color:var(--danger); box-shadow:none; margin-top:16px;" onclick="handleLogout()">🚪 Keluar / Logout</button>
         </section>
       </main>
     </div>
@@ -355,8 +566,8 @@ button { border: 0; cursor: pointer; }
       <div class="muted" id="locationText" style="font-size:11px; margin-top:4px;">Akurasi GPS: --</div>
     </div>
 
-    <button class="btn-go" id="captureBtn" style="margin-top:14px;" onclick="captureAttendance()">📸 Ambil Foto & Lanjut</button>
-    <button class="btn-go" style="background:transparent; color:var(--muted); box-shadow:none; margin-top:4px;" onclick="closeAttendance()">Batal</button>
+    <button class="btn-go" id="captureBtn" style="margin-top:16px;" onclick="captureAttendance()">📸 Ambil Foto & Lanjut</button>
+    <button class="btn-go" style="background:transparent; color:var(--text-muted); box-shadow:none; margin-top:4px;" onclick="closeAttendance()">Batal</button>
   </div>
 </div>
 
@@ -374,7 +585,7 @@ button { border: 0; cursor: pointer; }
     <div class="info-row"><span class="info-label">Jarak Radius</span><span class="info-val" id="confirmDistance">-</span></div>
 
     <button class="btn-go" style="margin-top:16px;" id="sendAttendanceBtn" onclick="submitConfirmation()">✓ Kirim Absen</button>
-    <button class="btn-go" style="background:transparent; color:var(--muted); box-shadow:none; margin-top:4px;" onclick="cancelConfirmation()">↩ Foto Ulang</button>
+    <button class="btn-go" style="background:transparent; color:var(--text-muted); box-shadow:none; margin-top:4px;" onclick="cancelConfirmation()">↩ Foto Ulang</button>
   </div>
 </div>
 
@@ -384,20 +595,20 @@ button { border: 0; cursor: pointer; }
     <div class="grab-bar"></div>
     <div class="sheet-title">Form Pengajuan Izin</div>
     <form id="permitForm">
-      <div style="margin-bottom:12px;">
-        <label style="font-size:12px; font-weight:700;">Jenis Izin</label>
-        <select id="permitType" style="width:100%; padding:10px; border-radius:10px; border:1px solid var(--line); margin-top:4px;"><option>Izin</option><option>Sakit</option></select>
+      <div class="input-group">
+        <label>Jenis Izin</label>
+        <select id="permitType"><option>Izin</option><option>Sakit</option></select>
       </div>
-      <div style="margin-bottom:12px;">
-        <label style="font-size:12px; font-weight:700;">Tanggal</label>
-        <input id="permitDate" type="date" required style="width:100%; padding:10px; border-radius:10px; border:1px solid var(--line); margin-top:4px;">
+      <div class="input-group">
+        <label>Tanggal</label>
+        <input id="permitDate" type="date" required>
       </div>
-      <div style="margin-bottom:12px;">
-        <label style="font-size:12px; font-weight:700;">Keterangan</label>
-        <textarea id="permitNote" placeholder="Alasan..." required style="width:100%; padding:10px; border-radius:10px; border:1px solid var(--line); margin-top:4px; height:80px;"></textarea>
+      <div class="input-group">
+        <label>Keterangan</label>
+        <textarea id="permitNote" placeholder="Alasan pengajuan..." required style="width:100%; padding:12px; border-radius:var(--radius-md); border:1px solid var(--border-light); height:90px;"></textarea>
       </div>
-      <button class="btn-go">Kirim Pengajuan</button>
-      <button type="button" class="btn-go" style="background:transparent; color:var(--muted); box-shadow:none; margin-top:4px;" onclick="closeModal()">Batal</button>
+      <button class="btn-go" style="margin-top:12px;">Kirim Pengajuan</button>
+      <button type="button" class="btn-go" style="background:transparent; color:var(--text-muted); box-shadow:none; margin-top:4px;" onclick="closeModal()">Batal</button>
     </form>
   </div>
 </div>
@@ -408,15 +619,49 @@ button { border: 0; cursor: pointer; }
     <div class="grab-bar"></div>
     <div class="sheet-title">Panel Control Admin</div>
     
-    <div style="border-bottom: 2px solid var(--line); margin-bottom: 12px; display: flex; gap: 10px;">
-      <button style="padding: 8px 12px; font-weight: 800; border-bottom: 2px solid var(--gojek-green); background: none;" id="btnTabUsers" onclick="switchAdminTab('users')">Karyawan</button>
-      <button style="padding: 8px 12px; font-weight: 800; border-bottom: 2px solid transparent; background: none; color: var(--muted);" id="btnTabOffices" onclick="switchAdminTab('offices')">Basecamp</button>
+    <div class="admin-tabs">
+      <button class="admin-tab-btn active" id="btnTabShift" onclick="switchAdminTab('shift')">⏰ Jam Kerja</button>
+      <button class="admin-tab-btn" id="btnTabUsers" onclick="switchAdminTab('users')">👥 Karyawan</button>
+      <button class="admin-tab-btn" id="btnTabOffices" onclick="switchAdminTab('offices')">📍 Basecamp</button>
+      <button class="admin-tab-btn" id="btnTabRecap" onclick="switchAdminTab('recap')">📊 Rekap Data</button>
+    </div>
+
+    <!-- TAB SETTING JAM KERJA & LEMBUR -->
+    <div id="tabShift">
+      <form id="shiftSettingsForm" style="background: var(--surface-subtle); padding: 16px; border-radius: var(--radius-lg); margin-bottom: 12px; border: 1px solid var(--border-light);">
+        <div style="font-weight: 800; margin-bottom: 12px; font-size: 13px;">⏰ Pengaturan Jam Kerja Usaha</div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div class="input-group">
+            <label>Jam Masuk</label>
+            <input type="time" id="setWorkIn" required>
+          </div>
+          <div class="input-group">
+            <label>Jam Pulang</label>
+            <input type="time" id="setWorkOut" required>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>Toleransi Keterlambatan (Menit)</label>
+          <input type="number" id="setLateTolerance" min="0" placeholder="0" required>
+        </div>
+
+        <div style="font-weight: 800; margin: 16px 0 10px; font-size: 13px;">🌙 Pengaturan Lembur</div>
+        
+        <div class="input-group">
+          <label>Minimal Menit Lembur Dihitung</label>
+          <input type="number" id="setOvertimeMinMinutes" min="0" placeholder="30" required>
+        </div>
+
+        <button class="btn-go" style="padding: 12px; font-size: 13px; margin-top: 8px;">💾 Simpan Setingan</button>
+      </form>
     </div>
 
     <!-- TAB TAMBAH USER -->
-    <div id="tabUsers">
-      <form id="addUserForm" style="background: #F8FAFC; padding: 12px; border-radius: 14px; margin-bottom: 12px;">
-        <div style="font-weight: 800; margin-bottom: 8px; font-size: 13px;">➕ Tambah Karyawan Baru</div>
+    <div id="tabUsers" style="display: none;">
+      <form id="addUserForm" style="background: var(--surface-subtle); padding: 16px; border-radius: var(--radius-lg); margin-bottom: 12px; border: 1px solid var(--border-light);">
+        <div style="font-weight: 800; margin-bottom: 12px; font-size: 13px;">➕ Tambah Karyawan Baru</div>
         <div class="input-group">
           <label>ID / Username</label>
           <input type="text" id="newUserId" placeholder="Contoh: USR003" required>
@@ -441,21 +686,21 @@ button { border: 0; cursor: pointer; }
           <label>Plotting Basecamp Utama</label>
           <select id="newUserOffice" required></select>
         </div>
-        <button class="btn-go" style="padding: 10px; font-size: 13px;">Simpan Karyawan</button>
+        <button class="btn-go" style="padding: 12px; font-size: 13px; margin-top: 8px;">Simpan Karyawan</button>
       </form>
-      <div style="font-weight: 800; font-size: 13px; margin: 10px 0 6px;">Daftar Akun Terdaftar:</div>
+      <div style="font-weight: 800; font-size: 13px; margin: 14px 0 8px;">Daftar Akun Terdaftar:</div>
       <div id="adminUserList"></div>
     </div>
 
     <!-- TAB TAMBAH BASECAMP -->
     <div id="tabOffices" style="display: none;">
-      <form id="addOfficeForm" style="background: #F8FAFC; padding: 12px; border-radius: 14px; margin-bottom: 12px;">
-        <div style="font-weight: 800; margin-bottom: 8px; font-size: 13px;">📍 Tambah Basecamp / Lokasi Kerja</div>
+      <form id="addOfficeForm" style="background: var(--surface-subtle); padding: 16px; border-radius: var(--radius-lg); margin-bottom: 12px; border: 1px solid var(--border-light);">
+        <div style="font-weight: 800; margin-bottom: 12px; font-size: 13px;">📍 Tambah Basecamp / Lokasi Kerja</div>
         <div class="input-group">
           <label>Nama Basecamp/Kantor</label>
           <input type="text" id="newOfficeName" placeholder="Basecamp Bekasi" required>
         </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
           <div class="input-group">
             <label>Latitude</label>
             <input type="number" step="any" id="newOfficeLat" placeholder="-6.2844" required>
@@ -469,13 +714,22 @@ button { border: 0; cursor: pointer; }
           <label>Radius Absen Maksimal (Meter)</label>
           <input type="number" id="newOfficeRadius" placeholder="150" value="150" required>
         </div>
-        <button class="btn-go" style="padding: 10px; font-size: 13px;">Simpan Basecamp</button>
+        <button class="btn-go" style="padding: 12px; font-size: 13px; margin-top: 8px;">Simpan Basecamp</button>
       </form>
-      <div style="font-weight: 800; font-size: 13px; margin: 10px 0 6px;">Daftar Basecamp:</div>
+      <div style="font-weight: 800; font-size: 13px; margin: 14px 0 8px;">Daftar Basecamp:</div>
       <div id="adminOfficeList"></div>
     </div>
 
-    <button class="btn-go" style="background:transparent; color:var(--muted); box-shadow:none; margin-top:12px;" onclick="closeAdminModal()">Tutup Panel Admin</button>
+    <!-- TAB REKAP & EXPORT GLOBAL -->
+    <div id="tabRecap" style="display: none;">
+      <div style="background: var(--surface-subtle); padding: 16px; border-radius: var(--radius-lg); margin-bottom: 12px; border: 1px solid var(--border-light);">
+        <div style="font-weight: 800; margin-bottom: 8px; font-size: 13px;">📥 Export Data Seluruh Karyawan</div>
+        <p class="muted" style="margin-top:0; margin-bottom: 14px;">Unduh rekap presensi seluruh tim dalam bentuk berkas CSV untuk payroll.</p>
+        <button class="btn-go" onclick="exportAllCSV()" style="padding: 12px; font-size: 13px;">📄 Download CSV Semua Presensi</button>
+      </div>
+    </div>
+
+    <button class="btn-go" style="background:transparent; color:var(--text-muted); box-shadow:none; margin-top:8px;" onclick="closeAdminModal()">Tutup Panel Admin</button>
   </div>
 </div>
 
@@ -487,16 +741,21 @@ button { border: 0; cursor: pointer; }
 // ==========================================
 const SUPABASE_URL = "https://adrexobwaczskutdemdj.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkcmV4b2J3YWN6c2t1dGRlbWRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk1NjUwNjYsImV4cCI6MjEwNTE0MTA2Nn0.8YTjbCMkXzFANdlUvfF-hXwX0OgVJz2bPNa4suX5q_Q";
-// Variabel diubah ke supabaseClient agar tidak bentrok dengan SDK Supabase
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // State Memory Sementara
 let state = {
-  currentUserId: localStorage.getItem("absenku_current_user") || null,
+  currentUserId: localStorage.getItem("charlynet_current_user") || null,
   users: [],
   offices: [],
   attendance: [],
-  permits: []
+  permits: [],
+  settings: {
+    workIn: "08:00",
+    workOut: "17:00",
+    lateTolerance: 0,
+    overtimeMinMinutes: 30
+  }
 };
 
 const $ = id => document.getElementById(id);
@@ -520,16 +779,19 @@ function time(d){return d ? new Date(d).toLocaleTimeString("id-ID",{hour:"2-digi
 function today(){return state.attendance.find(x => x.userId === state.currentUserId && x.date === key())}
 
 // ==========================================
-// LOAD DATA FROM SUPABASE
+// LOAD DATA FROM SUPABASE & LOCALSTORAGE SETTINGS
 // ==========================================
 async function loadInitialData() {
   try {
-    // 1. Fetch Offices
+    const localSettings = localStorage.getItem("charlynet_settings");
+    if (localSettings) {
+      state.settings = JSON.parse(localSettings);
+    }
+
     const { data: offices, error: errOffices } = await supabaseClient.from('offices').select('*');
     if(errOffices) throw errOffices;
     state.offices = offices || [];
 
-    // 2. Fetch Profiles/Users
     const { data: profiles, error: errProfiles } = await supabaseClient.from('profiles').select('*');
     if(errProfiles) throw errProfiles;
     state.users = (profiles || []).map(p => ({
@@ -557,7 +819,6 @@ async function fetchUserData() {
   const userObj = getCurrentUserObj();
   if(!userObj) return;
 
-  // 1. Fetch Attendance
   let query = supabaseClient.from('attendances').select('*');
   if(!userObj.isAdmin) {
     query = query.eq('user_id', state.currentUserId);
@@ -572,6 +833,7 @@ async function fetchUserData() {
       in: a.time_in,
       out: a.time_out,
       late: a.is_late,
+      overtimeMinutes: a.overtime_minutes || 0,
       inPhoto: a.in_photo_url,
       outPhoto: a.out_photo_url,
       inLat: a.in_lat,
@@ -580,7 +842,6 @@ async function fetchUserData() {
     }));
   }
 
-  // 2. Fetch Permits
   let permitQuery = supabaseClient.from('permits').select('*');
   if(!userObj.isAdmin) {
     permitQuery = permitQuery.eq('user_id', state.currentUserId);
@@ -590,10 +851,11 @@ async function fetchUserData() {
     state.permits = permData.map(p => ({
       id: p.id,
       userId: p.user_id,
+      userName: state.users.find(u => u.id === p.user_id)?.name || p.user_id,
       type: p.type,
       date: p.date,
       note: p.note,
-      status: p.status
+      status: p.status || 'Pending'
     }));
   }
 }
@@ -623,7 +885,7 @@ async function handleLogin(e) {
     }
 
     state.currentUserId = user.id;
-    localStorage.setItem("absenku_current_user", user.id);
+    localStorage.setItem("charlynet_current_user", user.id);
     
     $("inputUsername").value = "";
     $("inputPassword").value = "";
@@ -639,7 +901,7 @@ async function handleLogin(e) {
 
 function handleLogout() {
   state.currentUserId = null;
-  localStorage.removeItem("absenku_current_user");
+  localStorage.removeItem("charlynet_current_user");
   toast("Anda telah keluar.");
   renderApp();
 }
@@ -679,7 +941,7 @@ function initMiniMap(){
   miniMap=L.map("miniMap",{zoomControl:false,attributionControl:false}).setView([off.lat,off.lng],16);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19}).addTo(miniMap);
   officeMarker=L.marker([off.lat,off.lng]).addTo(miniMap);
-  officeCircle=L.circle([off.lat,off.lng],{radius:off.radius,color:"#00AA13",fillOpacity:.15,weight:2}).addTo(miniMap);
+  officeCircle=L.circle([off.lat,off.lng],{radius:off.radius,color:"#10B981",fillOpacity:.15,weight:2}).addTo(miniMap);
 }
 
 function updateGPSUI(lat,lng,accuracy,distance){
@@ -697,7 +959,7 @@ function updateGPSUI(lat,lng,accuracy,distance){
     $("gpsStatus").textContent = "GPS Kurang Akurat";
     dotEl.className = "gps-status-dot warn";
     detailEl.textContent = `⚠️ Akurasi GPS buruk (±${accuracy}m). Cari area terbuka!`;
-    detailEl.style.color = "var(--red)";
+    detailEl.style.color = "var(--danger)";
     $("captureBtn").disabled = true;
     return;
   }
@@ -706,19 +968,19 @@ function updateGPSUI(lat,lng,accuracy,distance){
     $("gpsStatus").textContent = "Lokasi Sesuai";
     dotEl.className = "gps-status-dot";
     detailEl.textContent = `✅ Di area ${off.name} (Max ${off.radius}m)`;
-    detailEl.style.color = "var(--gojek-green)";
+    detailEl.style.color = "var(--primary-dark)";
     $("captureBtn").disabled = false;
   } else {
     const diff = Math.round(distance - off.radius);
     $("gpsStatus").textContent = "Di Luar Radius";
     dotEl.className = "gps-status-dot warn";
     detailEl.textContent = `❌ Mendekat ${diff} meter lagi ke basecamp!`;
-    detailEl.style.color = "var(--red)";
+    detailEl.style.color = "var(--danger)";
     $("captureBtn").disabled = true;
   }
 
   if(miniMap){
-    if(!userMarker) userMarker=L.circleMarker([lat,lng],{radius:6,color:"#2563eb",fillOpacity:1}).addTo(miniMap);
+    if(!userMarker) userMarker=L.circleMarker([lat,lng],{radius:6,color:"#6366F1",fillOpacity:1}).addTo(miniMap);
     else userMarker.setLatLng([lat,lng]);
     miniMap.fitBounds([[lat,lng],[off.lat,off.lng]],{padding:[20,20],maxZoom:17});
   }
@@ -780,14 +1042,14 @@ function captureAttendance(){
   const d = now();
   const timeStr = d.toLocaleDateString("id-ID") + " " + time(d);
   
-  ctx.fillStyle = "rgba(0, 0, 0, 0.65)";
+  ctx.fillStyle = "rgba(15, 23, 42, 0.75)";
   ctx.fillRect(0, canvas.height - 95, canvas.width, 95);
   
   ctx.fillStyle = "#FFFFFF";
-  ctx.font = "bold 16px sans-serif";
+  ctx.font = "bold 16px 'Plus Jakarta Sans', sans-serif";
   ctx.fillText(`📍 ${off.name}`, 16, canvas.height - 66);
   
-  ctx.font = "13px sans-serif";
+  ctx.font = "13px 'Plus Jakarta Sans', sans-serif";
   ctx.fillText(`👤 ${userObj.name} (${userObj.id}) | 🕒 ${timeStr}`, 16, canvas.height - 42);
   ctx.fillText(`🌐 Lat: ${currentLocation.lat.toFixed(5)}, Lng: ${currentLocation.lng.toFixed(5)} (±${currentLocation.accuracy}m)`, 16, canvas.height - 18);
 
@@ -804,7 +1066,6 @@ function captureAttendance(){
   $("confirmModal").classList.add("show");
 }
 
-// UPLOAD BASE64 TO SUPABASE STORAGE BUCKET
 async function uploadAttendancePhoto(base64Data, fileName) {
   const res = await fetch(base64Data);
   const blob = await res.blob();
@@ -823,6 +1084,29 @@ async function uploadAttendancePhoto(base64Data, fileName) {
   return publicUrlData.publicUrl;
 }
 
+function checkLateAndOvertimeStatus(nowDate, type) {
+  const [workInHour, workInMin] = state.settings.workIn.split(':').map(Number);
+  const [workOutHour, workOutMin] = state.settings.workOut.split(':').map(Number);
+
+  if (type === "in") {
+    const targetIn = new Date(nowDate);
+    targetIn.setHours(workInHour, workInMin + Number(state.settings.lateTolerance), 0, 0);
+    return nowDate > targetIn;
+  } else if (type === "out") {
+    const targetOut = new Date(nowDate);
+    targetOut.setHours(workOutHour, workOutMin, 0, 0);
+    
+    if (nowDate > targetOut) {
+      const diffMs = nowDate - targetOut;
+      const diffMinutes = Math.floor(diffMs / (1000 * 60));
+      if (diffMinutes >= Number(state.settings.overtimeMinMinutes)) {
+        return diffMinutes;
+      }
+    }
+    return 0;
+  }
+}
+
 async function submitConfirmation(){
   const d=now(), userObj = getCurrentUserObj(), off = getOfficeById(userObj.officeId);
   const btn = $("sendAttendanceBtn");
@@ -835,7 +1119,7 @@ async function submitConfirmation(){
     const photoUrl = await uploadAttendancePhoto(currentPhoto, fileName);
 
     if (pendingAction === "in") {
-      const isLate = d.getHours() > 8 || (d.getHours() === 8 && d.getMinutes() > 0);
+      const isLate = checkLateAndOvertimeStatus(d, "in");
       const { error } = await supabaseClient.from('attendances').insert([{
         user_id: userObj.id,
         date: key(),
@@ -849,10 +1133,12 @@ async function submitConfirmation(){
 
       if (error) throw error;
     } else if (pendingAction === "out") {
+      const overtimeMins = checkLateAndOvertimeStatus(d, "out");
       const { error } = await supabaseClient.from('attendances')
         .update({
           time_out: d.toISOString(),
-          out_photo_url: photoUrl
+          out_photo_url: photoUrl,
+          overtime_minutes: overtimeMins
         })
         .eq('user_id', userObj.id)
         .eq('date', key());
@@ -864,7 +1150,7 @@ async function submitConfirmation(){
     closeAttendance();
     await fetchUserData();
     renderApp();
-    toast("✅ Absensi Berhasil Disimpan ke Cloud!");
+    toast("✅ Absensi Berhasil Disimpan!");
   } catch(err) {
     console.error(err);
     toast("❌ Gagal menyimpan absensi: " + err.message);
@@ -881,10 +1167,10 @@ function closeAttendance(){
 }
 
 function exportCSV(){
-  let csv = "User ID,Nama,Tanggal,Masuk,Pulang,Status,Lokasi Basecamp\n";
+  let csv = "User ID,Nama,Tanggal,Masuk,Pulang,Status,Lembur (Menit),Lokasi Basecamp\n";
   const myData = state.attendance.filter(x => x.userId === state.currentUserId);
   myData.forEach(x => {
-    csv += `${x.userId},${x.userName},${x.date},${time(x.in)},${x.out?time(x.out):'-'},${x.late?'Terlambat':'Hadir'},${x.locationName}\n`;
+    csv += `${x.userId},${x.userName},${x.date},${time(x.in)},${x.out?time(x.out):'-'},${x.late?'Terlambat':'Hadir'},${x.overtimeMinutes||0},${x.locationName}\n`;
   });
   const blob = new Blob([csv], { type: 'text/csv' });
   const url = window.URL.createObjectURL(blob);
@@ -894,20 +1180,33 @@ function exportCSV(){
   a.click();
 }
 
+function exportAllCSV(){
+  let csv = "User ID,Nama,Tanggal,Masuk,Pulang,Status,Lembur (Menit),Lokasi Basecamp\n";
+  state.attendance.forEach(x => {
+    csv += `${x.userId},${x.userName},${x.date},${time(x.in)},${x.out?time(x.out):'-'},${x.late?'Terlambat':'Hadir'},${x.overtimeMinutes||0},${x.locationName}\n`;
+  });
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.setAttribute('href', url);
+  a.setAttribute('download', `Rekap_Presensi_Global_${key()}.csv`);
+  a.click();
+}
+
 function exportPDF(){
   const userObj = getCurrentUserObj();
   if(!userObj) return;
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
   doc.setFontSize(16);
-  doc.text("Laporan Absensi Karyawan - AbsenKu Pro", 14, 20);
+  doc.text("Laporan Absensi Karyawan - Absensi Charly.NET", 14, 20);
   doc.setFontSize(11);
   doc.text(`Nama: ${userObj.name} (ID: ${userObj.id})`, 14, 30);
   doc.text(`Jabatan: ${userObj.role}`, 14, 36);
   doc.text(`Tanggal Cetak: ${key()}`, 14, 42);
 
   let y = 54;
-  doc.text("Tanggal", 14, y); doc.text("Jam Masuk", 50, y); doc.text("Jam Pulang", 90, y); doc.text("Status", 130, y);
+  doc.text("Tanggal", 14, y); doc.text("Jam Masuk", 50, y); doc.text("Jam Pulang", 90, y); doc.text("Status", 130, y); doc.text("Lembur", 165, y);
   doc.line(14, y+2, 190, y+2);
   y += 10;
 
@@ -917,6 +1216,7 @@ function exportPDF(){
     doc.text(time(x.in), 50, y);
     doc.text(x.out?time(x.out):"-", 90, y);
     doc.text(x.late?"Terlambat":"Hadir", 130, y);
+    doc.text(x.overtimeMinutes ? `${x.overtimeMinutes} m` : "-", 165, y);
     y += 8;
   });
 
@@ -926,20 +1226,17 @@ function exportPDF(){
 function renderApp(){
   const userObj = getCurrentUserObj();
 
-  // KONDISI 1: BELUM LOGIN
   if (!userObj) {
     $("loginScreen").style.display = "flex";
     $("mainApp").style.display = "none";
     return;
   }
 
-  // KONDISI 2: SUDAH LOGIN
   $("loginScreen").style.display = "none";
   $("mainApp").style.display = "block";
 
   const offObj = getOfficeById(userObj.officeId);
 
-  // Header User Info
   $("avatar").textContent = getInitials(userObj.name);
   $("displayName").textContent = userObj.name;
   $("displayRoleBadge").textContent = userObj.isAdmin ? "👑 Administrator" : "👷 Pekerja";
@@ -948,11 +1245,11 @@ function renderApp(){
   $("profileRole").textContent = userObj.role + ` • ${offObj.name}`;
   $("assignedBasecampName").textContent = offObj.name;
 
-  // VISIBILITY FITUR BERDASARKAN ROLE
   if(userObj.isAdmin) {
     $("navAdminTab").style.display = "block";
     $("mainNav").classList.add("admin-mode");
     renderAdminMonitoring();
+    renderAdminPermits();
   } else {
     $("navAdminTab").style.display = "none";
     $("mainNav").classList.remove("admin-mode");
@@ -963,18 +1260,17 @@ function renderApp(){
     }
   }
 
-  // Stat & Riwayat Personal Karyawan
   const userAttendance = state.attendance.filter(x => x.userId === state.currentUserId);
   const thisMonth = userAttendance.filter(x => x.date.slice(0,7) === key().slice(0,7));
-  const userPermits = state.permits.filter(x => x.userId === state.currentUserId && x.date.slice(0,7) === key().slice(0,7));
+  const totalLembur = thisMonth.filter(x=>x.overtimeMinutes > 0).length;
 
   $("hadir").textContent = thisMonth.length;
   $("terlambat").textContent = thisMonth.filter(x=>x.late).length;
-  $("izin").textContent = userPermits.length;
+  $("lemburCount").textContent = totalLembur;
 
   const rows = userAttendance.slice(0,5).map(x => row(x)).join("");
-  $("recent").innerHTML = rows || '<div style="text-align:center;color:var(--muted);padding:20px;">Belum ada riwayat absensi.</div>';
-  $("historyList").innerHTML = userAttendance.length ? userAttendance.map(row).join("") : '<div style="text-align:center;color:var(--muted);padding:20px;">Belum ada riwayat.</div>';
+  $("recent").innerHTML = rows || '<div style="text-align:center;color:var(--text-muted);padding:20px;font-size:13px;">Belum ada riwayat absensi.</div>';
+  $("historyList").innerHTML = userAttendance.length ? userAttendance.map(row).join("") : '<div style="text-align:center;color:var(--text-muted);padding:20px;font-size:13px;">Belum ada riwayat.</div>';
   
   renderStatus();
 }
@@ -983,7 +1279,7 @@ function renderAdminMonitoring() {
   $("adminTodayTitle").textContent = `Presensi Hari Ini (${key()})`;
   const todayLogs = state.attendance.filter(x => x.date === key());
   if(todayLogs.length === 0) {
-    $("allTodayLogs").innerHTML = '<div style="text-align:center;color:var(--muted);padding:14px;">Belum ada karyawan yang absen hari ini.</div>';
+    $("allTodayLogs").innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:14px;font-size:13px;">Belum ada karyawan yang absen hari ini.</div>';
     return;
   }
 
@@ -993,16 +1289,54 @@ function renderAdminMonitoring() {
       <div class="grow">
         <b>${x.userName}</b>
         <div class="muted">Masuk: ${time(x.in)} ${x.out ? '• Pulang: '+time(x.out) : ''}</div>
-        <div style="font-size:11px; color:var(--muted)">📍 ${x.locationName}</div>
+        <div style="font-size:11px; color:var(--text-muted)">📍 ${x.locationName} ${x.overtimeMinutes ? '• ⏱️ Lembur: '+x.overtimeMinutes+' m' : ''}</div>
       </div>
       <span class="badge ${x.late ? 'late' : ''}">${x.late ? 'Terlambat' : 'Hadir'}</span>
     </div>
   `).join("");
 }
 
+function renderAdminPermits() {
+  const pendingPermits = state.permits.filter(p => p.status === 'Pending');
+  if (pendingPermits.length === 0) {
+    $("adminPermitsList").innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:14px;font-size:13px;">Tidak ada pengajuan izin/sakit baru.</div>';
+    return;
+  }
+
+  $("adminPermitsList").innerHTML = pendingPermits.map(p => `
+    <div class="row">
+      <div class="grow">
+        <b>${p.userName} (${p.type})</b>
+        <div class="muted">Tgl: ${p.date} • "${p.note}"</div>
+      </div>
+      <div style="display:flex; gap:6px;">
+        <button onclick="approvePermit('${p.id}', 'Disetujui')" style="background:var(--primary-light); color:var(--primary-dark); padding:6px 12px; border-radius:8px; font-weight:700; font-size:11px;">Acc</button>
+        <button onclick="approvePermit('${p.id}', 'Ditolak')" style="background:#FEF2F2; color:var(--danger); padding:6px 12px; border-radius:8px; font-weight:700; font-size:11px;">Tolak</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+async function approvePermit(permitId, newStatus) {
+  try {
+    const { error } = await supabaseClient
+      .from('permits')
+      .update({ status: newStatus })
+      .eq('id', permitId);
+
+    if (error) throw error;
+    toast(`Pengajuan ${newStatus}!`);
+    await fetchUserData();
+    renderApp();
+  } catch (err) {
+    toast("❌ Gagal memperbarui status izin!");
+  }
+}
+
 function row(x){
   const dt=new Date(x.date+"T00:00:00").toLocaleDateString("id-ID",{day:"2-digit",month:"short",year:"numeric"});
-  return `<div class="row"><div class="icon-box">📌</div><div class="grow"><b>${dt}</b><div class="muted">Masuk: ${time(x.in)}${x.out?" • Pulang: "+time(x.out):""} (${x.locationName})</div></div><span class="badge ${x.late?"late":""}">${x.late?"Terlambat":"Hadir"}</span></div>`;
+  const overtimeBadge = x.overtimeMinutes > 0 ? `<span class="badge overtime" style="margin-left:4px;">Lembur ${x.overtimeMinutes}m</span>` : '';
+  return `<div class="row"><div class="icon-box">📌</div><div class="grow"><b>${dt}</b><div class="muted">Masuk: ${time(x.in)}${x.out?" • Pulang: "+time(x.out):""} (${x.locationName})</div></div><span class="badge ${x.late?"late":""}">${x.late?"Terlambat":"Hadir"}</span>${overtimeBadge}</div>`;
 }
 
 function openModal(){$("permitDate").value=key();$("modal").classList.add("show")}
@@ -1020,7 +1354,8 @@ $("permitForm").onsubmit = async e => {
       user_id: userObj.id,
       type: type,
       date: date,
-      note: note
+      note: note,
+      status: 'Pending'
     }]);
 
     if(error) throw error;
@@ -1043,24 +1378,33 @@ function openAdminModal(){
 function closeAdminModal(){ $("adminModal").classList.remove("show"); }
 
 function switchAdminTab(tab) {
-  if(tab === 'users') {
+  document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
+  $("tabShift").style.display = "none";
+  $("tabUsers").style.display = "none";
+  $("tabOffices").style.display = "none";
+  $("tabRecap").style.display = "none";
+
+  if(tab === 'shift') {
+    $("tabShift").style.display = "block";
+    $("btnTabShift").classList.add('active');
+  } else if(tab === 'users') {
     $("tabUsers").style.display = "block";
-    $("tabOffices").style.display = "none";
-    $("btnTabUsers").style.borderBottomColor = "var(--gojek-green)";
-    $("btnTabUsers").style.color = "var(--text)";
-    $("btnTabOffices").style.borderBottomColor = "transparent";
-    $("btnTabOffices").style.color = "var(--muted)";
-  } else {
-    $("tabUsers").style.display = "none";
+    $("btnTabUsers").classList.add('active');
+  } else if(tab === 'offices') {
     $("tabOffices").style.display = "block";
-    $("btnTabOffices").style.borderBottomColor = "var(--gojek-green)";
-    $("btnTabOffices").style.color = "var(--text)";
-    $("btnTabUsers").style.borderBottomColor = "transparent";
-    $("btnTabUsers").style.color = "var(--muted)";
+    $("btnTabOffices").classList.add('active');
+  } else if(tab === 'recap') {
+    $("tabRecap").style.display = "block";
+    $("btnTabRecap").classList.add('active');
   }
 }
 
 function renderAdminPanel() {
+  $("setWorkIn").value = state.settings.workIn;
+  $("setWorkOut").value = state.settings.workOut;
+  $("setLateTolerance").value = state.settings.lateTolerance;
+  $("setOvertimeMinMinutes").value = state.settings.overtimeMinMinutes;
+
   $("newUserOffice").innerHTML = state.offices.map(o => `<option value="${o.id}">${o.name}</option>`).join("");
 
   $("adminUserList").innerHTML = state.users.map(u => {
@@ -1083,6 +1427,17 @@ function renderAdminPanel() {
     </div>`;
   }).join("");
 }
+
+$("shiftSettingsForm").onsubmit = e => {
+  e.preventDefault();
+  state.settings.workIn = $("setWorkIn").value;
+  state.settings.workOut = $("setWorkOut").value;
+  state.settings.lateTolerance = $("setLateTolerance").value;
+  state.settings.overtimeMinMinutes = $("setOvertimeMinMinutes").value;
+
+  localStorage.setItem("charlynet_settings", JSON.stringify(state.settings));
+  toast("✅ Pengaturan jam kerja & lembur disimpan!");
+};
 
 $("addUserForm").onsubmit = async e => {
   e.preventDefault();
@@ -1150,7 +1505,6 @@ document.querySelectorAll(".nav-item").forEach(n=>n.onclick=()=>{
   renderApp();
 });
 
-// Initialization
 setInterval(renderClock,1000);
 renderClock();
 loadInitialData();
