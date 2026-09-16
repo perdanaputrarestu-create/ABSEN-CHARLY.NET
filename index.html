@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
 <title>AbsenKu — Absensi</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 :root{--bg:#f5f7fb;--card:#fff;--text:#172033;--muted:#748096;--primary:#2563eb;--primary2:#1d4ed8;--green:#16a34a;--red:#dc2626;--line:#e8ecf3;--shadow:0 10px 30px #17203312}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
@@ -18,6 +20,76 @@ button,input,select,textarea{font:inherit}button{border:0;cursor:pointer}.app{ma
 .bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);background:#fff;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(3,1fr);padding:9px 8px calc(9px + env(safe-area-inset-bottom));z-index:5}.nav{background:none;color:#8a94a6;font-size:11px;font-weight:700}.nav span{display:block;font-size:21px;line-height:25px}.nav.active{color:var(--primary)}
 .modal{position:fixed;inset:0;background:#0008;display:none;align-items:flex-end;justify-content:center;z-index:10}.modal.show{display:flex}.sheet{width:min(520px,100%);max-height:88dvh;overflow:auto;background:#fff;border-radius:24px 24px 0 0;padding:20px 16px calc(25px + env(safe-area-inset-bottom));animation:up .2s ease}@keyframes up{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}.sheet h2{margin:0 0 15px}.close{float:right;background:#f1f5f9;border-radius:50%;width:34px;height:34px}.field{margin:12px 0}.field label{display:block;font-weight:700;margin-bottom:6px}.field input,.field select,.field textarea{width:100%;padding:13px;border:1px solid #dfe4ec;border-radius:12px;outline:0;background:#fff}.field textarea{min-height:100px;resize:vertical}.toast{position:fixed;left:50%;bottom:88px;transform:translateX(-50%) translateY(15px);background:#172033;color:#fff;padding:11px 15px;border-radius:12px;font-size:13px;opacity:0;pointer-events:none;transition:.2s;z-index:20;white-space:nowrap}.toast.show{opacity:1;transform:translateX(-50%)}
 .profile{text-align:center}.profile .avatar{margin:auto;width:72px;height:72px;font-size:24px}.danger{color:var(--red);background:#fee2e2;margin-top:10px}
+
+/* === GPS / OJOL STYLE UPGRADE === */
+.mini-map{height:190px;border-radius:18px;overflow:hidden;position:relative;margin:12px 0;background:#eef2f5;border:1px solid #e5e7eb}
+#miniMap{height:100%;width:100%}
+.map-refresh{position:absolute;z-index:500;right:10px;top:10px;border:0;background:#fff;border-radius:12px;width:42px;height:42px;font-size:20px;box-shadow:0 3px 12px #0002}
+.gps-card{background:#fff;border:1px solid #e8eaed;border-radius:16px;padding:13px;margin-top:10px}
+.gps-row{display:flex;align-items:center;gap:10px}
+.gps-dot{width:12px;height:12px;border-radius:50%;background:#16a34a;box-shadow:0 0 0 7px #16a34a18;flex:none}
+.gps-dot.warn{background:#f59e0b;box-shadow:0 0 0 7px #f59e0b18}
+.gps-title{font-weight:700;font-size:14px}
+.gps-sub{font-size:12px;color:#6b7280;margin-top:3px}
+.gps-distance{margin-left:auto;font-weight:800;font-size:14px}
+.status-pill{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:999px;font-size:12px;font-weight:700;background:#f3f4f6}
+.status-pill.ok{background:#dcfce7;color:#166534}
+.status-pill.late{background:#fef3c7;color:#92400e}
+.att-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.btn-secondary{border:0;background:#f3f4f6;border-radius:14px;padding:13px;font-weight:700}
+.countdown{position:absolute;inset:0;display:none;place-items:center;background:#0006;color:#fff;font-size:72px;font-weight:900;z-index:20}
+
+/* Fix Video & Canvas Preview */
+.camera{position:relative;width:100%;border-radius:18px;overflow:hidden;background:#000;margin-bottom:10px}
+.camera video{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;transform:scaleX(-1)}
+.camera canvas{display:none}
+.camera .face-guide{position:absolute;inset:18% 22%;border:2px solid #fff9;border-radius:48%;pointer-events:none;box-shadow:0 0 0 999px #0001}
+
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.stat{background:#fff;border:1px solid #eee;border-radius:15px;padding:12px;text-align:center}
+.stat b{display:block;font-size:20px}.stat span{font-size:11px;color:#6b7280}
+
+.confirm-modal{position:fixed;inset:0;background:#0009;display:none;align-items:flex-end;justify-content:center;z-index:50}
+.confirm-modal.show{display:flex}
+.confirm-sheet{width:min(520px,100%);background:#fff;border-radius:26px 26px 0 0;padding:18px 16px calc(22px + env(safe-area-inset-bottom));max-height:92dvh;overflow:auto;animation:up .22s ease}
+.confirm-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.confirm-check{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:#dcfce7;color:#15803d;font-size:22px;font-weight:900}
+.confirm-title{font-size:20px;font-weight:850}
+.confirm-sub{font-size:12px;color:#748096}
+.photo-preview{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:20px;background:#eef2f5;display:block}
+.confirm-info{margin:12px 0}
+.confirm-line{display:flex;align-items:center;padding:11px 0;border-bottom:1px solid #edf0f4;gap:10px}
+.confirm-line:last-child{border-bottom:0}
+.confirm-icon{width:34px;text-align:center;font-size:18px}
+.confirm-label{font-size:12px;color:#748096}
+.confirm-value{font-weight:750;font-size:14px}
+.confirm-actions{display:grid;grid-template-columns:1fr 1.4fr;gap:10px;margin-top:8px}
+.btn-redo{background:#f3f4f6;color:#172033}
+
+/* === PREMIUM OJOL CONFIRMATION === */
+.confirm-sheet{padding-top:14px}
+.confirm-grab{width:42px;height:4px;border-radius:99px;background:#d9dee7;margin:0 auto 15px}
+.confirm-photo-wrap{position:relative}
+.confirm-photo{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:20px;display:block}
+.photo-status{position:absolute;left:12px;bottom:12px;background:#16a34a;color:#fff;border-radius:999px;padding:7px 11px;font-size:12px;font-weight:800;box-shadow:0 4px 12px #0003}
+.confirm-map{height:120px;border-radius:16px;overflow:hidden;margin-top:12px;border:1px solid #e8ecf3}
+.confirm-summary{background:#f8fafc;border-radius:18px;padding:13px;margin-top:12px}
+.confirm-summary-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.confirm-summary-title{font-weight:850}
+.confirm-distance{font-weight:900}
+.confirm-ok{color:#15803d;font-size:12px;font-weight:700}
+.send-btn{position:relative;overflow:hidden}
+.send-btn.loading{pointer-events:none;opacity:.85}
+.send-btn .spinner{display:none;width:17px;height:17px;border:2px solid #ffffff66;border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-3px;margin-right:7px}
+.send-btn.loading .spinner{display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.success-modal{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;z-index:80;padding:20px}
+.success-modal.show{display:flex}
+.success-card{width:min(390px,100%);background:#fff;border-radius:28px;padding:28px 20px;text-align:center;box-shadow:0 20px 60px #0004;animation:pop .25s ease}
+.success-icon{width:72px;height:72px;margin:0 auto 13px;border-radius:50%;display:grid;place-items:center;background:#dcfce7;color:#15803d;font-size:40px}
+.success-card h2{margin:0 0 5px}.success-card p{margin:0;color:#748096;font-size:13px}
+.success-detail{background:#f8fafc;border-radius:16px;padding:12px;margin:16px 0;text-align:left;font-size:13px}
+@keyframes pop{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
 </style>
 </head>
 <body>
@@ -62,17 +134,41 @@ button,input,select,textarea{font:inherit}button{border:0;cursor:pointer}.app{ma
   <button class="nav" data-page="profile"><span>♙</span>Profil</button>
 </nav>
 
-
 <div class="modal" id="attendanceModal" onclick="if(event.target===this)closeAttendance()">
   <div class="sheet">
     <button class="close" onclick="closeAttendance()">✕</button>
     <h2 id="attendanceTitle">Absen Masuk</h2>
-    <div class="camera"><video id="video" autoplay playsinline></video><canvas id="canvas"></canvas></div>
+    <div class="camera">
+      <video id="video" autoplay playsinline></video>
+      <canvas id="canvas"></canvas>
+      <div class="face-guide"></div>
+      <div id="countdown" class="countdown"></div>
+    </div>
     <div class="cam-status" id="camStatus">Kamera siap digunakan.</div>
-    <div class="location"><b>📍 Lokasi & Radius Kantor</b><span id="locationText">Mencari lokasi...</span><div id="radiusText" style="margin-top:5px">Jarak dari kantor: menghitung...</div></div>
-    <button class="btn primary" id="captureBtn" onclick="captureAttendance()">📸 Ambil Foto & Absen</button>
+    
+    <div class="mini-map" id="miniMapWrap">
+      <div id="miniMap"></div>
+      <button class="map-refresh" onclick="event.stopPropagation();refreshLocation()" aria-label="Perbarui lokasi">⌖</button>
+    </div>
+    <div class="gps-card">
+      <div class="gps-row">
+        <span id="gpsDot" class="gps-dot"></span>
+        <div>
+          <div class="gps-title" id="gpsStatus">Mencari lokasi...</div>
+          <div class="gps-sub" id="gpsAccuracy">Menunggu GPS</div>
+        </div>
+        <div class="gps-distance" id="gpsDistance">-- m</div>
+      </div>
+    </div>
+    <div class="location" style="margin-top:10px;">
+      <b>📍 Lokasi & Radius Kantor</b><br>
+      <span id="locationText" style="font-size:12px;">Mencari lokasi...</span>
+      <div id="radiusText" style="margin-top:5px; font-size:12px; font-weight:700;">Jarak dari kantor: menghitung...</div>
+    </div>
+    <button class="btn primary" id="captureBtn" style="margin-top:15px;" onclick="captureAttendance()">📸 Ambil Foto & Absen</button>
   </div>
 </div>
+
 <div class="modal" id="modal" onclick="if(event.target===this)closeModal()">
   <div class="sheet">
     <button class="close" onclick="closeModal()">✕</button><h2>Pengajuan</h2>
@@ -84,34 +180,131 @@ button,input,select,textarea{font:inherit}button{border:0;cursor:pointer}.app{ma
     </form>
   </div>
 </div>
+
+<div class="confirm-modal" id="confirmModal" onclick="if(event.target===this)cancelConfirmation()">
+  <div class="confirm-sheet">
+    <div class="confirm-grab"></div>
+    <div class="confirm-head">
+      <div class="confirm-check">✓</div>
+      <div>
+        <div class="confirm-title">Cek Absensi</div>
+        <div class="confirm-sub">Pastikan foto dan lokasi sudah benar</div>
+      </div>
+    </div>
+
+    <div class="confirm-photo-wrap">
+      <img id="confirmPhoto" class="confirm-photo" alt="Foto absensi">
+      <div class="photo-status">✓ Foto siap dikirim</div>
+    </div>
+
+    <div class="confirm-map" id="confirmMap"></div>
+    <div class="confirm-summary">
+      <div class="confirm-summary-head">
+        <div class="confirm-summary-title" id="confirmType">Absen Masuk</div>
+        <div class="confirm-distance" id="confirmDistance">-- m</div>
+      </div>
+      <div class="confirm-ok" id="confirmArea">● Berada dalam area kantor</div>
+    </div>
+
+    <div class="confirm-line"><div class="confirm-icon">🕐</div><div class="grow"><div class="confirm-label">Waktu</div><div class="confirm-value" id="confirmTime">-</div></div></div>
+    <div class="confirm-line"><div class="confirm-icon">📍</div><div class="grow"><div class="confirm-label">Koordinat</div><div class="confirm-value" id="confirmLocation">-</div></div></div>
+    <div class="confirm-line"><div class="confirm-icon">🎯</div><div class="grow"><div class="confirm-label">Akurasi GPS</div><div class="confirm-value" id="confirmAccuracy">-</div></div></div>
+
+    <div class="confirm-actions">
+      <button class="btn btn-redo" onclick="cancelConfirmation()">↩ Foto Ulang</button>
+      <button class="btn green send-btn" id="sendAttendanceBtn" onclick="submitConfirmation()"><span class="spinner"></span><span class="send-text">Kirim Absensi ✓</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="success-modal" id="successModal" onclick="if(event.target===this)closeSuccess()">
+  <div class="success-card">
+    <div class="success-icon">✓</div>
+    <h2>Absensi Berhasil</h2>
+    <p>Data absensi sudah tersimpan di perangkat.</p>
+    <div class="success-detail">
+      <div>🕐 <b id="successTime">-</b></div>
+      <div style="margin-top:6px">📍 <span id="successDistance">-</span> dari kantor</div>
+    </div>
+    <button class="btn primary" onclick="closeSuccess()">Selesai</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
 const KEY="absenku_v1", user={name:"Restu Ulfah"};
-// === PENGATURAN KANTOR ===
-// Ganti koordinat berikut dengan titik lokasi kantor.
-// Contoh: latitude -6.200000, longitude 106.816666, radius 100 meter.
 const OFFICE={lat:-6.200000,lng:106.816666,radius:100};
 let data=JSON.parse(localStorage.getItem(KEY)||'{"attendance":[], "permits":[]}');
 
 const $=id=>document.getElementById(id), save=()=>localStorage.setItem(KEY,JSON.stringify(data));
-function pad(n){return String(n).padStart(2,"0")}
 function now(){return new Date()}
 function key(d=now()){return d.toISOString().slice(0,10)}
 function time(d){return new Date(d).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit",second:"2-digit"})}
 function today(){return data.attendance.find(x=>x.date===key())}
+
 function renderClock(){
- const d=now();$("clock").textContent=d.toLocaleTimeString("id-ID",{hour12:false});
+ const d=now();
+ $("clock").textContent=d.toLocaleTimeString("id-ID",{hour12:false});
  $("date").textContent=d.toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
  renderStatus();
 }
+
 function renderStatus(){
  const t=today(), b=$("absenBtn");
  if(!t){$("status").textContent="Anda belum melakukan absensi hari ini";b.textContent="🟢 Absen Masuk";b.disabled=false}
  else if(!t.out){$("status").textContent=`Masuk ${time(t.in)} • Foto + koordinat tersimpan`;b.textContent="🏁 Absen Pulang";b.disabled=false}
  else{$("status").textContent=`Masuk ${time(t.in)} • Pulang ${time(t.out)} • Foto + koordinat tersimpan`;b.textContent="✓ Absensi Selesai";b.disabled=true}
 }
+
 let cameraStream=null, pendingAction=null, currentLocation=null, currentPhoto=null;
+let miniMap=null, userMarker=null, officeMarker=null, routeLine=null;
+let confirmMap=null;
+
+function initMiniMap(){
+  if(typeof L==="undefined" || !$("miniMap")) return;
+  if(miniMap) { miniMap.invalidateSize(); return; }
+  miniMap=L.map("miniMap",{zoomControl:false,attributionControl:false}).setView([OFFICE.lat,OFFICE.lng],16);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19}).addTo(miniMap);
+  officeMarker=L.marker([OFFICE.lat,OFFICE.lng]).addTo(miniMap).bindPopup("🏢 Kantor");
+  L.circle([OFFICE.lat,OFFICE.lng],{radius:OFFICE.radius,color:"#2563eb",fillOpacity:.10,weight:2}).addTo(miniMap);
+}
+
+function updateGPSUI(lat,lng,accuracy,distance){
+  const d=$("gpsDistance"), s=$("gpsStatus"), a=$("gpsAccuracy"), dot=$("gpsDot");
+  if(d) d.textContent=Math.round(distance)+" m";
+  if(a) a.textContent="Akurasi GPS ±"+Math.round(accuracy)+" m";
+  const good=distance<=OFFICE.radius && accuracy<=50;
+  if(s) s.textContent=good ? "Lokasi sesuai" : (distance>OFFICE.radius ? "Di luar radius kantor" : "GPS kurang akurat");
+  if(dot) dot.className="gps-dot"+(good?"":" warn");
+  if(miniMap){
+    if(!userMarker){
+      userMarker=L.circleMarker([lat,lng],{radius:8,weight:3,fillOpacity:.95}).addTo(miniMap).bindPopup("📍 Posisi Anda");
+    } else userMarker.setLatLng([lat,lng]);
+    if(routeLine) routeLine.setLatLngs([[lat,lng],[OFFICE.lat,OFFICE.lng]]);
+    else routeLine=L.polyline([[lat,lng],[OFFICE.lat,OFFICE.lng]],{weight:3,dashArray:"7 7"}).addTo(miniMap);
+    miniMap.fitBounds([[lat,lng],[OFFICE.lat,OFFICE.lng]],{padding:[25,25],maxZoom:17});
+  }
+}
+
+function refreshLocation(){
+  $("locationText").textContent="Memperbarui lokasi...";
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(pos=>{
+      currentLocation={lat:pos.coords.latitude,lng:pos.coords.longitude,accuracy:Math.round(pos.coords.accuracy)};
+      const dist=distanceMeters(currentLocation.lat,currentLocation.lng,OFFICE.lat,OFFICE.lng);
+      const inside=dist<=OFFICE.radius;
+      $("locationText").textContent=`${currentLocation.lat.toFixed(6)}, ${currentLocation.lng.toFixed(6)} • akurasi ±${currentLocation.accuracy} m`;
+      $("radiusText").textContent=`${inside?"✅ Dalam":"❌ Di luar"} radius • Jarak ${Math.round(dist)} m / maksimal ${OFFICE.radius} m`;
+      $("radiusText").style.color=inside?"var(--green)":"var(--red)";
+      $("captureBtn").disabled=!inside;
+      updateGPSUI(currentLocation.lat,currentLocation.lng,currentLocation.accuracy,dist);
+      toast("Lokasi diperbarui");
+    },()=>{
+      $("locationText").textContent="Gagal mengambil lokasi.";
+    },{enableHighAccuracy:true,timeout:10000,maximumAge:0});
+  }
+}
 
 async function openAttendance(){
   const t=today();
@@ -120,6 +313,7 @@ async function openAttendance(){
   $("attendanceTitle").textContent=t?"Absen Pulang":"Absen Masuk";
   $("captureBtn").textContent=t?"📸 Ambil Foto & Absen Pulang":"📸 Ambil Foto & Absen Masuk";
   $("attendanceModal").classList.add("show");
+  setTimeout(initMiniMap,120);
   currentLocation=null; currentPhoto=null;
   $("captureBtn").disabled=true;
   $("locationText").textContent="Mencari lokasi...";
@@ -132,19 +326,7 @@ async function openAttendance(){
   }catch(e){
     $("camStatus").textContent="Kamera tidak bisa diakses. Izinkan kamera lalu coba lagi.";
   }
-  if(navigator.geolocation){
-    navigator.geolocation.getCurrentPosition(pos=>{
-      currentLocation={lat:pos.coords.latitude,lng:pos.coords.longitude,accuracy:Math.round(pos.coords.accuracy)};
-      const dist=distanceMeters(currentLocation.lat,currentLocation.lng,OFFICE.lat,OFFICE.lng);
-      const inside=dist<=OFFICE.radius;
-      $("locationText").textContent=`${currentLocation.lat.toFixed(6)}, ${currentLocation.lng.toFixed(6)} • akurasi ±${currentLocation.accuracy} m`;
-      $("radiusText").textContent=`${inside?"✅ Dalam":"❌ Di luar"} radius • Jarak ${Math.round(dist)} m / maksimal ${OFFICE.radius} m`;
-      $("radiusText").style.color=inside?"var(--green)":"var(--red)";
-      $("captureBtn").disabled=!inside;
-    },()=>{
-      $("locationText").textContent="Lokasi tidak diizinkan. Aktifkan GPS untuk mencatat koordinat.";
-    },{enableHighAccuracy:true,timeout:10000,maximumAge:0});
-  }else $("locationText").textContent="Browser tidak mendukung GPS.";
+  refreshLocation();
 }
 
 function distanceMeters(lat1,lon1,lat2,lon2){
@@ -152,49 +334,136 @@ function distanceMeters(lat1,lon1,lat2,lon2){
   const a=Math.sin(dLat/2)**2+Math.cos(lat1*r)*Math.cos(lat2*r)*Math.sin(dLon/2)**2;
   return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 }
+
 function captureAttendance(){
   if(!currentLocation){toast("Lokasi belum tersedia. Aktifkan GPS dan coba lagi.");return}
   const dist=distanceMeters(currentLocation.lat,currentLocation.lng,OFFICE.lat,OFFICE.lng);
   if(dist>OFFICE.radius){toast(`Tidak bisa absen. Anda ${Math.round(dist)} m dari kantor.`);return}
+  if(currentLocation.accuracy>50){toast("Akurasi GPS terlalu rendah. Coba perbarui lokasi.");return}
+  
   const video=$("video"), canvas=$("canvas");
   if(!video.videoWidth){toast("Kamera belum siap.");return}
   canvas.width=video.videoWidth;canvas.height=video.videoHeight;
-  canvas.getContext("2d").drawImage(video,0,0,canvas.width,canvas.height);
-  currentPhoto=canvas.toDataURL("image/jpeg",.72);
+  const ctx=canvas.getContext("2d");
+  ctx.save();ctx.translate(canvas.width,0);ctx.scale(-1,1);
+  ctx.drawImage(video,0,0,canvas.width,canvas.height);ctx.restore();
+  currentPhoto=canvas.toDataURL("image/jpeg",.78);
 
-  const d=now(), t=today();
-  if(pendingAction==="in"){
-    data.attendance.unshift({date:key(),in:d.toISOString(),out:null,late:d.getHours()>8||(d.getHours()===8&&d.getMinutes()>0),inPhoto:currentPhoto,inLat:currentLocation.lat,inLng:currentLocation.lng,inAccuracy:currentLocation.accuracy});
-  }else if(t && !t.out){
-    t.out=d.toISOString();t.outPhoto=currentPhoto;t.outLat=currentLocation.lat;t.outLng=currentLocation.lng;t.outAccuracy=currentLocation.accuracy;
-  }
-  save();closeAttendance();render();toast(pendingAction==="in"?"Absen masuk berhasil!":"Absen pulang berhasil!");
+  const d=now();
+  $("confirmPhoto").src=currentPhoto;
+  $("confirmTime").textContent=time(d);
+  $("confirmLocation").textContent=`${currentLocation.lat.toFixed(6)}, ${currentLocation.lng.toFixed(6)}`;
+  $("confirmDistance").textContent=`${Math.round(dist)} m • radius ${OFFICE.radius} m`;
+  $("confirmAccuracy").textContent=`±${currentLocation.accuracy} m`;
+  $("confirmType").textContent=pendingAction==="in"?"Absen Masuk":"Absen Pulang";
+  $("confirmArea").textContent="● Berada "+Math.round(dist)+" m dari kantor";
+  setTimeout(initConfirmMap,80);
+
+  $("confirmModal").classList.add("show");
+  $("captureBtn").disabled=true;
+}
+
+function initConfirmMap(){
+  if(typeof L==="undefined" || !currentLocation || !$("confirmMap")) return;
+  if(confirmMap){confirmMap.remove();confirmMap=null;}
+  confirmMap=L.map("confirmMap",{zoomControl:false,attributionControl:false,dragging:false,touchZoom:false,doubleClickZoom:false,scrollWheelZoom:false}).setView([currentLocation.lat,currentLocation.lng],17);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19}).addTo(confirmMap);
+  L.circleMarker([currentLocation.lat,currentLocation.lng],{radius:8,weight:3}).addTo(confirmMap).bindPopup("📍 Anda");
+  L.marker([OFFICE.lat,OFFICE.lng]).addTo(confirmMap).bindPopup("🏢 Kantor");
+  L.circle([OFFICE.lat,OFFICE.lng],{radius:OFFICE.radius,weight:2,fillOpacity:.08}).addTo(confirmMap);
+  L.polyline([[currentLocation.lat,currentLocation.lng],[OFFICE.lat,OFFICE.lng]],{weight:3,dashArray:"7 7"}).addTo(confirmMap);
+}
+
+function submitConfirmation(){
+  if(!currentPhoto||!currentLocation){toast("Data absensi belum lengkap.");return}
+  const dist=distanceMeters(currentLocation.lat,currentLocation.lng,OFFICE.lat,OFFICE.lng);
+  if(dist>OFFICE.radius||currentLocation.accuracy>50){toast("Lokasi tidak memenuhi syarat.");return}
+
+  const btn=$("sendAttendanceBtn"), txt=btn?.querySelector(".send-text");
+  if(btn){btn.classList.add("loading");if(txt)txt.textContent="Mengirim...";}
+
+  setTimeout(()=>{
+    const d=now(), t=today();
+    if(pendingAction==="in"){
+      data.attendance.unshift({
+        date:key(),in:d.toISOString(),out:null,
+        late:d.getHours()>8||(d.getHours()===8&&d.getMinutes()>0),
+        inPhoto:currentPhoto,inLat:currentLocation.lat,inLng:currentLocation.lng,inAccuracy:currentLocation.accuracy
+      });
+    }else if(t&&!t.out){
+      t.out=d.toISOString();t.outPhoto=currentPhoto;t.outLat=currentLocation.lat;t.outLng=currentLocation.lng;t.outAccuracy=currentLocation.accuracy;
+    }
+    save();
+    const finalDistance=Math.round(dist);
+    cancelConfirmation();
+    closeAttendance();
+    render();
+    $("successTime").textContent=time(d);
+    $("successDistance").textContent=finalDistance+" m";
+    $("successModal").classList.add("show");
+    if(btn){btn.classList.remove("loading");if(txt)txt.textContent="Kirim Absensi ✓";}
+  },650);
+}
+
+function closeSuccess(){$("successModal").classList.remove("show");}
+
+function cancelConfirmation(){
+  $("confirmModal").classList.remove("show");
+  currentPhoto=null;
+  if($("captureBtn")) $("captureBtn").disabled=!currentLocation;
 }
 
 function closeAttendance(){
+  cancelConfirmation();
   $("attendanceModal").classList.remove("show");
   if(cameraStream){cameraStream.getTracks().forEach(x=>x.stop());cameraStream=null}
 }
+
 function render(){
  const a=data.attendance, thisMonth=a.filter(x=>x.date.slice(0,7)===key().slice(0,7));
- $("hadir").textContent=thisMonth.length;$("terlambat").textContent=thisMonth.filter(x=>x.late).length;
+ $("hadir").textContent=thisMonth.length;
+ $("terlambat").textContent=thisMonth.filter(x=>x.late).length;
  $("izin").textContent=data.permits.filter(x=>x.date.slice(0,7)===key().slice(0,7)).length;
- const rows=a.slice(0,5).map(x=>row(x)).join("");$("recent").innerHTML=rows||'<div class="empty">Belum ada riwayat absensi.</div>';
+ const rows=a.slice(0,5).map(x=>row(x)).join("");
+ $("recent").innerHTML=rows||'<div class="empty">Belum ada riwayat absensi.</div>';
  $("historyList").innerHTML=a.length?a.map(row).join(""):'<div class="empty">Belum ada riwayat absensi.</div>';
  renderStatus();
 }
+
 function row(x){
  const dt=new Date(x.date+"T00:00:00").toLocaleDateString("id-ID",{day:"2-digit",month:"short",year:"numeric"});
  return `<div class="row"><div class="icon">📅</div><div class="grow"><b>${dt}</b><div class="muted">Masuk ${time(x.in)}${x.out?" • Pulang "+time(x.out):""} • 📍 ${x.inLat?`${x.inLat.toFixed(5)}, ${x.inLng.toFixed(5)}`:"-"}</div></div><span class="badge ${x.late?"late":""}">${x.late?"Terlambat":"Hadir"}</span></div>`;
 }
+
 function openModal(){$("permitDate").value=key();$("modal").classList.add("show")}
 function closeModal(){$("modal").classList.remove("show")}
-$("permitForm").onsubmit=e=>{e.preventDefault();data.permits.push({type:$("permitType").value,date:$("permitDate").value,note:$("permitNote").value});save();closeModal();e.target.reset();render();toast("Pengajuan tersimpan!")}
+
+$("permitForm").onsubmit=e=>{
+  e.preventDefault();
+  data.permits.push({type:$("permitType").value,date:$("permitDate").value,note:$("permitNote").value});
+  save();
+  closeModal();
+  e.target.reset();
+  render();
+  toast("Pengajuan tersimpan!");
+}
+
 function toast(msg){$("toast").textContent=msg;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),2200)}
 function resetData(){if(confirm("Hapus semua data demo?")){data={attendance:[],permits:[]};save();render();toast("Data berhasil direset")}}
-document.querySelectorAll(".nav").forEach(n=>n.onclick=()=>{document.querySelectorAll(".nav,.page").forEach(x=>x.classList.remove("active"));n.classList.add("active");$(n.dataset.page).classList.add("active");render()});
-$("displayName").textContent=user.name;$("profileName").textContent=user.name;
-setInterval(renderClock,1000);renderClock();render();
+
+document.querySelectorAll(".nav").forEach(n=>n.onclick=()=>{
+  document.querySelectorAll(".nav,.page").forEach(x=>x.classList.remove("active"));
+  n.classList.add("active");
+  $(n.dataset.page).classList.add("active");
+  render();
+});
+
+$("displayName").textContent=user.name;
+$("profileName").textContent=user.name;
+
+setInterval(renderClock,1000);
+renderClock();
+render();
 </script>
 </body>
 </html>
