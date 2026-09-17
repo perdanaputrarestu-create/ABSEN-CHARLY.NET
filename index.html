@@ -48,14 +48,25 @@
   -webkit-font-smoothing: antialiased;
 }
 
+html {
+  width: 100%;
+  height: 100%;
+  background-color: #0F172A; 
+  overscroll-behavior: none; 
+}
+
 body { 
   margin: 0; 
-  background: #0F172A; 
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background-color: #0F172A; 
   color: var(--text-main); 
   -webkit-tap-highlight-color: transparent;
   display: flex;
   justify-content: center;
-  min-height: 100dvh;
+  overscroll-behavior-y: none;
 }
 
 button, input, select, textarea { font: inherit; outline: none; }
@@ -64,12 +75,19 @@ button { border: 0; cursor: pointer; }
 .app { 
   width: 100%;
   max-width: 480px; 
+  min-height: 100vh; 
   min-height: 100dvh; 
-  padding-bottom: 100px; 
-  background: var(--bg-app); 
+  background: #0F172A; 
   position: relative;
   box-shadow: 0 0 50px rgba(0,0,0,0.3);
   overflow-x: hidden;
+}
+
+#mainApp {
+  padding-bottom: 100px;
+  background: var(--bg-app);
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 #appLoadingScreen {
@@ -99,11 +117,13 @@ button { border: 0; cursor: pointer; }
   display: flex;
   flex-direction: column;
   justify-content: center;
+  min-height: 100vh;
   min-height: 100dvh;
   padding: 32px 24px;
   background: radial-gradient(circle at top right, #1E293B, #0F172A);
   color: #fff;
   position: relative;
+  width: 100%;
 }
 
 .login-header { text-align: center; margin-bottom: 36px; }
@@ -1415,7 +1435,6 @@ function renderApp(){
   const userAttendance = state.attendance.filter(x => String(x.userId) === String(state.currentUserId));
   const userPermits = state.permits.filter(x => String(x.userId) === String(state.currentUserId));
 
-  // Gabungkan Absensi dan Pengajuan Izin/Sakit urut berdasarkan Tanggal Terbaru
   const combinedHistory = [...userAttendance, ...userPermits].sort((a, b) => new Date(b.date) - new Date(a.date));
 
   const thisMonth = userAttendance.filter(x => x.date.slice(0,7) === key().slice(0,7));
@@ -1501,12 +1520,11 @@ function row(x){
   const monthNames = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
   const dt = `${day} ${monthNames[parseInt(month, 10) - 1]} ${year}`;
 
-  // Tampilan untuk Izin / Sakit
   if (x.type && (x.type === 'Izin' || x.type === 'Sakit')) {
     let statusBadgeClass = '';
-    if (x.status === 'Disetujui') statusBadgeClass = 'style="background:var(--primary-light); color:var(--primary-dark);"';
-    else if (x.status === 'Ditolak') statusBadgeClass = 'style="background:#FEF2F2; color:var(--danger);"';
-    else statusBadgeClass = 'class="badge late"'; // Status Pending
+    if (x.status === 'Disetujui') statusBadgeClass = 'style="background:var(--primary-light); color:var(--primary-dark);"'
+    else if (x.status === 'Ditolak') statusBadgeClass = 'style="background:#FEF2F2; color:var(--danger);"'
+    else statusBadgeClass = 'class="badge late"';
 
     return `
       <div class="row">
@@ -1520,7 +1538,6 @@ function row(x){
     `;
   }
 
-  // Tampilan untuk Absensi Reguler
   const overtimeBadge = x.overtimeMinutes > 0 ? `<span class="badge overtime" style="margin-left:4px;">Lembur ${x.overtimeMinutes}m</span>` : '';
   return `
     <div class="row">
