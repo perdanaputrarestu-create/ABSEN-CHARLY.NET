@@ -11,13 +11,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<!-- External JS Libraries -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-<!-- Supabase JS SDK v2 -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<!-- SweetAlert2 Library -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
@@ -48,25 +46,21 @@
   -webkit-font-smoothing: antialiased;
 }
 
-html {
-  width: 100%;
-  height: 100%;
-  background-color: #0F172A; 
-  overscroll-behavior: none; 
-}
-
-body { 
-  margin: 0; 
-  padding: 0;
+html, body {
   width: 100%;
   min-height: 100vh;
   min-height: 100dvh;
-  background-color: #0F172A; 
+  background-color: #0F172A;
+  overscroll-behavior: none;
+  margin: 0;
+  padding: 0;
+}
+
+body { 
   color: var(--text-main); 
   -webkit-tap-highlight-color: transparent;
   display: flex;
   justify-content: center;
-  overscroll-behavior-y: none;
 }
 
 button, input, select, textarea { font: inherit; outline: none; }
@@ -77,7 +71,6 @@ button { border: 0; cursor: pointer; }
   max-width: 480px; 
   min-height: 100vh; 
   min-height: 100dvh; 
-  background: #0F172A; 
   position: relative;
   box-shadow: 0 0 50px rgba(0,0,0,0.3);
   overflow-x: hidden;
@@ -102,6 +95,7 @@ button { border: 0; cursor: pointer; }
   z-index: 999;
   transition: opacity 0.3s ease;
 }
+
 .spinner {
   width: 40px;
   height: 40px;
@@ -278,23 +272,60 @@ button { border: 0; cursor: pointer; }
 .stat-box small { font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 
 .section-title { font-size: 15px; font-weight: 800; margin: 20px 4px 12px; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; letter-spacing: -0.2px; }
-.row { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border-light); }
-.row:last-child { border: 0; }
-.icon-box { 
-  width: 44px; 
-  height: 44px; 
-  border-radius: 14px; 
-  background: var(--surface-subtle); 
-  display: grid; 
-  place-items: center; 
-  font-size: 18px; 
-  flex-shrink: 0;
+
+/* REVISED HISTORY & ADMIN CARDS */
+.history-card-item {
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease;
 }
-.grow { flex: 1; }
-.muted { color: var(--text-muted); font-size: 12px; margin-top: 3px; font-weight: 500; }
-.badge { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 8px; background: var(--primary-light); color: var(--primary-dark); }
+.history-card-item:last-child { margin-bottom: 0; }
+.history-header-flex { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.history-date { font-weight: 800; font-size: 14px; color: var(--text-main); }
+.history-location { font-size: 11px; font-weight: 600; color: var(--text-muted); margin-top: 2px; }
+
+.time-pill-box {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  background: var(--surface-subtle);
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+}
+.time-pill { font-weight: 700; color: var(--text-main); }
+
+.photo-preview-grid { display: flex; gap: 8px; margin-top: 10px; }
+.thumb-img {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  object-fit: cover;
+  cursor: pointer;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.15s ease;
+}
+.thumb-img:hover { transform: scale(1.05); }
+
+.badge { 
+  font-size: 11px; 
+  font-weight: 700; 
+  padding: 4px 10px; 
+  border-radius: 20px; 
+  background: var(--primary-light); 
+  color: var(--primary-dark); 
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
 .badge.late { background: #FEF3C7; color: #D97706; }
 .badge.overtime { background: #F3E8FF; color: #7E22CE; }
+.badge.permit { background: #E0F2FE; color: #0369A1; }
 
 .input-group { margin-bottom: 14px; text-align: left; }
 .input-group label { font-size: 12px; font-weight: 700; display: block; margin-bottom: 6px; color: var(--text-main); }
@@ -379,9 +410,10 @@ button { border: 0; cursor: pointer; }
 .page { display: none; }
 .page.active { display: block; }
 
+/* REVISED ADMIN TABS */
 .admin-tabs {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   overflow-x: auto;
   border-bottom: 1px solid var(--border-light);
   margin-bottom: 16px;
@@ -391,16 +423,20 @@ button { border: 0; cursor: pointer; }
 .admin-tabs::-webkit-scrollbar { display: none; }
 
 .admin-tab-btn {
-  padding: 8px 14px;
+  padding: 8px 16px;
   font-weight: 700;
-  font-size: 13px;
+  font-size: 12px;
   border-radius: 20px;
   background: var(--surface-subtle);
   color: var(--text-muted);
   white-space: nowrap;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
 }
-.admin-tab-btn.active { background: var(--text-main); color: #fff; }
+.admin-tab-btn.active { 
+  background: var(--primary); 
+  color: #fff; 
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
 </style>
 </head>
 <body>
@@ -483,7 +519,7 @@ button { border: 0; cursor: pointer; }
         </div>
 
         <div class="section-title">Riwayat Saya</div>
-        <section class="card" id="recent"></section>
+        <div id="recent"></div>
       </main>
 
       <main id="history" class="page">
@@ -491,7 +527,7 @@ button { border: 0; cursor: pointer; }
           <span>Semua Riwayat Saya</span>
           <button onclick="exportCSV()" style="font-size:12px; background:var(--primary-light); color:var(--primary-dark); padding:6px 12px; border-radius:10px; font-weight:700;">📥 Export CSV</button>
         </div>
-        <section class="card" id="historyList"></section>
+        <div id="historyList"></div>
       </main>
 
       <main id="adminDashboard" class="page">
@@ -534,6 +570,17 @@ button { border: 0; cursor: pointer; }
 
 </div>
 
+<!-- Floating Photo Preview Modal -->
+<div class="modal" id="photoPreviewModal" onclick="closePhotoPreview()" style="align-items:center;">
+  <div class="sheet" style="border-radius:24px; text-align:center; padding:20px; background:transparent; box-shadow:none;" onclick="event.stopPropagation()">
+    <div style="position:relative; display:inline-block; max-width:90vw;">
+      <img id="previewImage" src="" alt="Foto Absensi" style="width:100%; max-height:75vh; object-fit:contain; border-radius:16px; box-shadow:0 20px 25px -5px rgba(0,0,0,0.5);">
+      <button onclick="closePhotoPreview()" style="position:absolute; top:-12px; right:-12px; background:#EF4444; color:#fff; border:none; width:32px; height:32px; border-radius:50%; font-weight:800; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.3);">✕</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
 <div class="modal" id="attendanceModal">
   <div class="sheet">
     <div class="grab-bar"></div>
@@ -830,15 +877,8 @@ const Toast = Swal.mixin({
 });
 
 function showToast(message, type = 'info', title = '') {
-  const iconMap = {
-    success: 'success',
-    error: 'error',
-    warning: 'warning',
-    info: 'info'
-  };
-  
   Toast.fire({
-    icon: iconMap[type] || 'info',
+    icon: type,
     title: title || (type === 'success' ? 'Berhasil' : type === 'error' ? 'Gagal' : 'Informasi'),
     text: message
   });
@@ -881,8 +921,21 @@ let state = {
 
 let capturedTimestamp = null;
 let isAttendanceModalOpen = false;
+let cameraStream = null, pendingAction = null, currentLocation = null, currentPhoto = null;
+let miniMap = null, userMarker = null, officeMarker = null, officeCircle = null;
 
 const $ = id => document.getElementById(id);
+
+function showPhotoPreview(url) {
+  if (!url) return;
+  $("previewImage").src = url;
+  $("photoPreviewModal").classList.add("show");
+}
+
+function closePhotoPreview() {
+  $("photoPreviewModal").classList.remove("show");
+  $("previewImage").src = "";
+}
 
 function getInitials(name) {
   if(!name) return "--";
@@ -897,13 +950,13 @@ function getOfficeById(officeId) {
   return state.offices.find(o => String(o.id) === String(officeId)) || { name: 'Lokasi Tidak Ditemukan', lat: 0, lng: 0, radius: 100 };
 }
 
-function now(){return new Date()}
-function key(d=now()){
+function now() { return new Date(); }
+function key(d = now()) {
   const pad = n => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
-function time(d){return d ? new Date(d).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit",second:"2-digit"}) : '-'}
-function today(){return state.attendance.find(x => String(x.userId) === String(state.currentUserId) && x.date === key())}
+function time(d) { return d ? new Date(d).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }) : '-'; }
+function today() { return state.attendance.find(x => String(x.userId) === String(state.currentUserId) && x.date === key()); }
 function closeModalId(id) { $(id).classList.remove("show"); }
 
 function formatToLocalDatetimeInput(dateStr) {
@@ -911,15 +964,13 @@ function formatToLocalDatetimeInput(dateStr) {
   const d = new Date(dateStr);
   if(isNaN(d.getTime())) return "";
   const pad = n => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
 async function loadInitialData() {
   try {
     const localSettings = localStorage.getItem("charlynet_settings");
-    if (localSettings) {
-      state.settings = JSON.parse(localSettings);
-    }
+    if (localSettings) state.settings = JSON.parse(localSettings);
 
     const { data: offices, error: errOffices } = await supabaseClient.from('offices').select('*');
     if(errOffices) throw errOffices;
@@ -936,9 +987,7 @@ async function loadInitialData() {
       isAdmin: p.is_admin
     }));
 
-    if(state.currentUserId) {
-      await fetchUserData();
-    }
+    if(state.currentUserId) await fetchUserData();
   } catch(err) {
     console.error("Gagal memuat data dari Supabase:", err);
     showToast("Gagal terhubung ke Database Supabase!", "error");
@@ -958,9 +1007,8 @@ async function fetchUserData() {
   if(!userObj) return;
 
   let query = supabaseClient.from('attendances').select('*');
-  if(!userObj.isAdmin) {
-    query = query.eq('user_id', state.currentUserId);
-  }
+  if(!userObj.isAdmin) query = query.eq('user_id', state.currentUserId);
+  
   const { data: attData, error: errAtt } = await query.order('created_at', { ascending: false });
   if(!errAtt && attData) {
     state.attendance = attData.map(a => ({
@@ -981,9 +1029,8 @@ async function fetchUserData() {
   }
 
   let permitQuery = supabaseClient.from('permits').select('*');
-  if(!userObj.isAdmin) {
-    permitQuery = permitQuery.eq('user_id', state.currentUserId);
-  }
+  if(!userObj.isAdmin) permitQuery = permitQuery.eq('user_id', state.currentUserId);
+  
   const { data: permData, error: errPerm } = await permitQuery;
   if(!errPerm && permData) {
     state.permits = permData.map(p => ({
@@ -1015,7 +1062,6 @@ async function handleLogin(e) {
 
     if(error || !user) {
       showToast("Username atau Kata Sandi yang dimasukkan salah!", "error", "Akses Ditolak");
-      btn.disabled = false;
       return;
     }
 
@@ -1053,25 +1099,22 @@ function handleLogout() {
 }
 
 function renderClock(){
-  const d=now();
-  if($("clock")) $("clock").textContent=d.toLocaleTimeString("id-ID",{hour12:false});
-  if($("date")) $("date").textContent=d.toLocaleDateString("id-ID",{weekday:"short",day:"numeric",month:"short",year:"numeric"});
+  const d = now();
+  if($("clock")) $("clock").textContent = d.toLocaleTimeString("id-ID", { hour12: false });
+  if($("date")) $("date").textContent = d.toLocaleDateString("id-ID", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
   if(state.currentUserId) renderStatus();
 }
 
 function renderStatus(){
-  const t=today(), b=$("absenBtn"), txt=$("absenBtnText");
+  const t = today(), b = $("absenBtn"), txt = $("absenBtnText");
   if(!b || !txt) return;
-  if(!t){$("status").textContent="Belum Absen Hari Ini";txt.textContent="Absen Masuk";b.disabled=false}
-  else if(!t.out){$("status").textContent=`Sudah Masuk (${time(t.in)})`;txt.textContent="Absen Pulang";b.disabled=false}
-  else{$("status").textContent=`Absensi Selesai Hari Ini`;txt.textContent="Selesai";b.disabled=true}
+  if(!t) { $("status").textContent = "Belum Absen Hari Ini"; txt.textContent = "Absen Masuk"; b.disabled = false; }
+  else if(!t.out) { $("status").textContent = `Sudah Masuk (${time(t.in)})`; txt.textContent = "Absen Pulang"; b.disabled = false; }
+  else { $("status").textContent = `Absensi Selesai Hari Ini`; txt.textContent = "Selesai"; b.disabled = true; }
 }
 
-let cameraStream=null, pendingAction=null, currentLocation=null, currentPhoto=null;
-let miniMap=null, userMarker=null, officeMarker=null, officeCircle=null;
-
 function initMiniMap(){
-  if(typeof L==="undefined" || !$("miniMap")) return;
+  if(typeof L === "undefined" || !$("miniMap")) return;
   const userObj = getCurrentUserObj();
   if(!userObj) return;
   const off = getOfficeById(userObj.officeId);
@@ -1083,19 +1126,18 @@ function initMiniMap(){
     miniMap.invalidateSize(); 
     return; 
   }
-  miniMap=L.map("miniMap",{zoomControl:false,attributionControl:false}).setView([off.lat,off.lng],16);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19}).addTo(miniMap);
-  officeMarker=L.marker([off.lat,off.lng]).addTo(miniMap);
-  officeCircle=L.circle([off.lat,off.lng],{radius:off.radius,color:"#10B981",fillOpacity:.15,weight:2}).addTo(miniMap);
+  miniMap = L.map("miniMap", { zoomControl: false, attributionControl: false }).setView([off.lat, off.lng], 16);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }).addTo(miniMap);
+  officeMarker = L.marker([off.lat, off.lng]).addTo(miniMap);
+  officeCircle = L.circle([off.lat, off.lng], { radius: off.radius, color: "#10B981", fillOpacity: .15, weight: 2 }).addTo(miniMap);
 }
 
-function updateGPSUI(lat,lng,accuracy,distance){
+function updateGPSUI(lat, lng, accuracy, distance){
   if (!isAttendanceModalOpen) return;
   const userObj = getCurrentUserObj();
   if(!userObj) return;
   const off = getOfficeById(userObj.officeId);
-  const roundedDist = Math.round(distance);
-  $("gpsDistance").textContent = roundedDist + " m";
+  $("gpsDistance").textContent = Math.round(distance) + " m";
   const inside = distance <= off.radius;
   
   const detailEl = $("radiusDetailText");
@@ -1126,9 +1168,9 @@ function updateGPSUI(lat,lng,accuracy,distance){
   }
 
   if(miniMap){
-    if(!userMarker) userMarker=L.circleMarker([lat,lng],{radius:6,color:"#6366F1",fillOpacity:1}).addTo(miniMap);
-    else userMarker.setLatLng([lat,lng]);
-    miniMap.fitBounds([[lat,lng],[off.lat,off.lng]],{padding:[20,20],maxZoom:17});
+    if(!userMarker) userMarker = L.circleMarker([lat, lng], { radius: 6, color: "#6366F1", fillOpacity: 1 }).addTo(miniMap);
+    else userMarker.setLatLng([lat, lng]);
+    miniMap.fitBounds([[lat, lng], [off.lat, off.lng]], { padding: [20, 20], maxZoom: 17 });
   }
 }
 
@@ -1136,28 +1178,28 @@ function refreshLocation(){
   if (!isAttendanceModalOpen) return;
   $("locationText").textContent = "Memperbarui GPS...";
   if(navigator.geolocation){
-    navigator.geolocation.getCurrentPosition(pos=>{
+    navigator.geolocation.getCurrentPosition(pos => {
       if (!isAttendanceModalOpen) return;
       const userObj = getCurrentUserObj();
       if(!userObj) return;
       const off = getOfficeById(userObj.officeId);
-      currentLocation={lat:pos.coords.latitude,lng:pos.coords.longitude,accuracy:Math.round(pos.coords.accuracy)};
-      const dist=distanceMeters(currentLocation.lat,currentLocation.lng,off.lat,off.lng);
-      $("locationText").textContent=`Koordinat: ${currentLocation.lat.toFixed(5)}, ${currentLocation.lng.toFixed(5)} (Acc: ±${currentLocation.accuracy}m)`;
-      updateGPSUI(currentLocation.lat,currentLocation.lng,currentLocation.accuracy,dist);
+      currentLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: Math.round(pos.coords.accuracy) };
+      const dist = distanceMeters(currentLocation.lat, currentLocation.lng, off.lat, off.lng);
+      $("locationText").textContent = `Koordinat: ${currentLocation.lat.toFixed(5)}, ${currentLocation.lng.toFixed(5)} (Acc: ±${currentLocation.accuracy}m)`;
+      updateGPSUI(currentLocation.lat, currentLocation.lng, currentLocation.accuracy, dist);
       if(miniMap) miniMap.invalidateSize();
-    },()=>{
+    }, () => {
       if (!isAttendanceModalOpen) return;
-      $("locationText").textContent="Gagal mengambil lokasi GPS";
+      $("locationText").textContent = "Gagal mengambil lokasi GPS";
       showToast("Gagal mendeteksi sinyal GPS lokasi Anda", "error");
-    },{enableHighAccuracy:true,timeout:10000,maximumAge:0});
+    }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
   }
 }
 
 async function openAttendance(){
-  const t=today();
-  if(t && t.out){showToast("Absensi hari ini telah selesai.", "info");return}
-  pendingAction=t?"out":"in";
+  const t = today();
+  if(t && t.out){ showToast("Absensi hari ini telah selesai.", "info"); return; }
+  pendingAction = t ? "out" : "in";
   isAttendanceModalOpen = true;
 
   if (userMarker && miniMap) {
@@ -1165,36 +1207,39 @@ async function openAttendance(){
     userMarker = null;
   }
 
-  $("attendanceTitle").textContent=t?"Absen Pulang":"Absen Masuk";
+  $("attendanceTitle").textContent = t ? "Absen Pulang" : "Absen Masuk";
   $("attendanceModal").classList.add("show");
-  setTimeout(initMiniMap,150);
-  currentLocation=null; currentPhoto=null;
-  $("captureBtn").disabled=true;
-  try{
-    cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user"},audio:false});
-    $("video").srcObject=cameraStream;
-  }catch(e){
+  setTimeout(initMiniMap, 150);
+  currentLocation = null; currentPhoto = null;
+  $("captureBtn").disabled = true;
+  try {
+    cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
+    $("video").srcObject = cameraStream;
+  } catch(e) {
     showToast("Akses kamera ditolak oleh perangkat.", "error");
   }
   refreshLocation();
 }
 
-function distanceMeters(lat1,lon1,lat2,lon2){
-  const R=6371000, r=Math.PI/180, dLat=(lat2-lat1)*r, dLon=(lon2-lon1)*r;
-  const a=Math.sin(dLat/2)**2+Math.cos(lat1*r)*Math.cos(lat2*r)*Math.sin(dLon/2)**2;
-  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+function distanceMeters(lat1, lon1, lat2, lon2){
+  const R = 6371000, r = Math.PI / 180, dLat = (lat2 - lat1) * r, dLon = (lon2 - lon1) * r;
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * r) * Math.cos(lat2 * r) * Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
 function captureAttendance(){
   if(!currentLocation) return;
   const userObj = getCurrentUserObj();
   const off = getOfficeById(userObj.officeId);
-  const video=$("video"), canvas=$("canvas");
-  canvas.width=640; canvas.height=480;
-  const ctx=canvas.getContext("2d");
+  const video = $("video"), canvas = $("canvas");
+  canvas.width = 640; canvas.height = 480;
+  const ctx = canvas.getContext("2d");
   
-  ctx.save(); ctx.translate(canvas.width,0); ctx.scale(-1,1);
-  ctx.drawImage(video,0,0,canvas.width,canvas.height); ctx.restore();
+  ctx.save(); 
+  ctx.translate(canvas.width, 0); 
+  ctx.scale(-1, 1);
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height); 
+  ctx.restore();
 
   const d = now();
   capturedTimestamp = d.toISOString();
@@ -1211,15 +1256,15 @@ function captureAttendance(){
   ctx.fillText(`👤 ${userObj.name} (${userObj.id}) | 🕒 ${timeStr}`, 16, canvas.height - 42);
   ctx.fillText(`🌐 Lat: ${currentLocation.lat.toFixed(5)}, Lng: ${currentLocation.lng.toFixed(5)} (±${currentLocation.accuracy}m)`, 16, canvas.height - 18);
 
-  currentPhoto=canvas.toDataURL("image/jpeg",0.85);
+  currentPhoto = canvas.toDataURL("image/jpeg", 0.85);
 
-  const dist=distanceMeters(currentLocation.lat,currentLocation.lng,off.lat,off.lng);
-  $("confirmPhoto").src=currentPhoto;
-  $("confirmUserName").textContent=userObj.name;
-  $("confirmTime").textContent=time(d);
-  $("confirmTargetLocation").textContent=off.name;
-  $("confirmDistance").textContent=Math.round(dist)+" meter";
-  $("confirmType").textContent=pendingAction==="in"?"Absen Masuk":"Absen Pulang";
+  const dist = distanceMeters(currentLocation.lat, currentLocation.lng, off.lat, off.lng);
+  $("confirmPhoto").src = currentPhoto;
+  $("confirmUserName").textContent = userObj.name;
+  $("confirmTime").textContent = time(d);
+  $("confirmTargetLocation").textContent = off.name;
+  $("confirmDistance").textContent = Math.round(dist) + " meter";
+  $("confirmType").textContent = pendingAction === "in" ? "Absen Masuk" : "Absen Pulang";
 
   $("confirmModal").classList.add("show");
 }
@@ -1253,17 +1298,11 @@ function checkLateAndOvertimeStatus(nowDate, type) {
   } else if (type === "out") {
     const targetOut = new Date(nowDate);
     targetOut.setHours(workOutHour, workOutMin, 0, 0);
-    
-    if (workOutHour < workInHour) {
-      targetOut.setDate(targetOut.getDate() + 1);
-    }
+    if (workOutHour < workInHour) targetOut.setDate(targetOut.getDate() + 1);
     
     if (nowDate > targetOut) {
-      const diffMs = nowDate - targetOut;
-      const diffMinutes = Math.floor(diffMs / (1000 * 60));
-      if (diffMinutes >= Number(state.settings.overtimeMinMinutes)) {
-        return diffMinutes;
-      }
+      const diffMinutes = Math.floor((nowDate - targetOut) / (1000 * 60));
+      if (diffMinutes >= Number(state.settings.overtimeMinMinutes)) return diffMinutes;
     }
     return 0;
   }
@@ -1294,7 +1333,6 @@ async function submitConfirmation(){
         in_lng: currentLocation.lng,
         location_name: off.name
       }]);
-
       if (error) throw error;
     } else if (pendingAction === "out") {
       const overtimeMins = checkLateAndOvertimeStatus(d, "out");
@@ -1306,7 +1344,6 @@ async function submitConfirmation(){
         })
         .eq('user_id', userObj.id)
         .eq('date', key(d));
-
       if (error) throw error;
     }
 
@@ -1328,7 +1365,7 @@ function closeAttendance(){
   isAttendanceModalOpen = false;
   cancelConfirmation();
   $("attendanceModal").classList.remove("show");
-  if(cameraStream){cameraStream.getTracks().forEach(x=>x.stop());cameraStream=null}
+  if(cameraStream){ cameraStream.getTracks().forEach(x=>x.stop()); cameraStream = null; }
 }
 
 function exportCSV(){
@@ -1337,12 +1374,7 @@ function exportCSV(){
   myData.forEach(x => {
     csv += `${x.userId},${x.userName},${x.date},${time(x.in)},${x.out?time(x.out):'-'},${x.late?'Terlambat':'Hadir'},${x.overtimeMinutes||0},${x.locationName}\n`;
   });
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const url = window.URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.setAttribute('href', url);
-  a.setAttribute('download', `Rekap_Absen_${state.currentUserId}_${key()}.csv`);
-  a.click();
+  downloadFile(csv, `Rekap_Absen_${state.currentUserId}_${key()}.csv`, 'text/csv');
   showToast("File CSV presensi telah diunduh.", "success");
 }
 
@@ -1351,13 +1383,17 @@ function exportAllCSV(){
   state.attendance.forEach(x => {
     csv += `${x.userId},${x.userName},${x.date},${time(x.in)},${x.out?time(x.out):'-'},${x.late?'Terlambat':'Hadir'},${x.overtimeMinutes||0},${x.locationName}\n`;
   });
-  const blob = new Blob([csv], { type: 'text/csv' });
+  downloadFile(csv, `Rekap_Presensi_Global_${key()}.csv`, 'text/csv');
+  showToast("Unduh rekap global CSV berhasil.", "success");
+}
+
+function downloadFile(content, fileName, mimeType) {
+  const blob = new Blob([content], { type: mimeType });
   const url = window.URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.setAttribute('href', url);
-  a.setAttribute('download', `Rekap_Presensi_Global_${key()}.csv`);
+  a.href = url;
+  a.download = fileName;
   a.click();
-  showToast("Unduh rekap global CSV berhasil.", "success");
 }
 
 function exportPDF(){
@@ -1421,12 +1457,10 @@ function renderApp(){
   } else {
     $("navAdminTab").style.display = "none";
     $("mainNav").classList.remove("admin-mode");
-    if(state.activePage === "adminDashboard") {
-      state.activePage = "home";
-    }
+    if(state.activePage === "adminDashboard") state.activePage = "home";
   }
 
-  document.querySelectorAll(".nav-item,.page").forEach(x=>x.classList.remove("active"));
+  document.querySelectorAll(".nav-item, .page").forEach(x => x.classList.remove("active"));
   const activeNavBtn = document.querySelector(`.nav-item[data-page="${state.activePage}"]`);
   if(activeNavBtn) activeNavBtn.classList.add("active");
   const activePageEl = $(state.activePage);
@@ -1434,18 +1468,15 @@ function renderApp(){
 
   const userAttendance = state.attendance.filter(x => String(x.userId) === String(state.currentUserId));
   const userPermits = state.permits.filter(x => String(x.userId) === String(state.currentUserId));
-
   const combinedHistory = [...userAttendance, ...userPermits].sort((a, b) => new Date(b.date) - new Date(a.date));
 
   const thisMonth = userAttendance.filter(x => x.date.slice(0,7) === key().slice(0,7));
-  const totalLembur = thisMonth.filter(x=>x.overtimeMinutes > 0).length;
 
   $("hadir").textContent = thisMonth.length;
-  $("terlambat").textContent = thisMonth.filter(x=>x.late).length;
-  $("lemburCount").textContent = totalLembur;
+  $("terlambat").textContent = thisMonth.filter(x => x.late).length;
+  $("lemburCount").textContent = thisMonth.filter(x => x.overtimeMinutes > 0).length;
 
-  const recentRows = combinedHistory.slice(0, 5).map(x => row(x)).join("");
-  $("recent").innerHTML = recentRows || '<div style="text-align:center;color:var(--text-muted);padding:20px;font-size:13px;">Belum ada riwayat absensi / izin.</div>';
+  $("recent").innerHTML = combinedHistory.slice(0, 5).map(row).join("") || '<div style="text-align:center;color:var(--text-muted);padding:20px;font-size:13px;">Belum ada riwayat absensi / izin.</div>';
   $("historyList").innerHTML = combinedHistory.length ? combinedHistory.map(row).join("") : '<div style="text-align:center;color:var(--text-muted);padding:20px;font-size:13px;">Belum ada riwayat.</div>';
   
   renderStatus();
@@ -1460,18 +1491,31 @@ function renderAdminMonitoring() {
   }
 
   $("allTodayLogs").innerHTML = todayLogs.map(x => `
-    <div class="row">
-      <div class="icon-box">👤</div>
-      <div class="grow">
-        <b>${x.userName}</b>
-        <div class="muted">Masuk: ${time(x.in)} ${x.out ? '• Pulang: '+time(x.out) : ''}</div>
-        <div style="font-size:11px; color:var(--text-muted)">📍 ${x.locationName} ${x.overtimeMinutes ? '• ⏱️ Lembur: '+x.overtimeMinutes+' m' : ''}</div>
+    <div class="history-card-item">
+      <div class="history-header-flex">
+        <div>
+          <div class="history-date">${x.userName}</div>
+          <div class="history-location">📍 ${x.locationName}</div>
+        </div>
+        <div style="display:flex; gap:4px; align-items:center;">
+          <span class="badge ${x.late ? 'late' : ''}">${x.late ? 'Terlambat' : 'Hadir'}</span>
+          ${x.overtimeMinutes ? `<span class="badge overtime">${x.overtimeMinutes}m Lembur</span>` : ''}
+        </div>
       </div>
-      <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
-        <span class="badge ${x.late ? 'late' : ''}">${x.late ? 'Terlambat' : 'Hadir'}</span>
-        <div style="display:flex; gap:4px; margin-top:4px;">
-          <button onclick="openEditAttendanceModal('${x.id}')" style="background:var(--surface-subtle); color:var(--text-main); border:1px solid var(--border-light); font-size:10px; font-weight:700; border-radius:6px; padding:3px 8px;">✏️ Edit</button>
-          <button onclick="deleteAttendance('${x.id}')" style="background:none; border:none; color:var(--danger); font-size:10px; font-weight:700; cursor:pointer; padding:2px 0;">Hapus</button>
+      
+      <div class="time-pill-box">
+        <div>Masuk: <span class="time-pill">${time(x.in)}</span></div>
+        <div style="margin-left:auto;">Pulang: <span class="time-pill">${x.out ? time(x.out) : '--:--'}</span></div>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+        <div class="photo-preview-grid" style="margin-top:0;">
+          ${x.inPhoto ? `<img src="${x.inPhoto}" class="thumb-img" onclick="showPhotoPreview('${x.inPhoto}')" title="Foto Masuk">` : ''}
+          ${x.outPhoto ? `<img src="${x.outPhoto}" class="thumb-img" onclick="showPhotoPreview('${x.outPhoto}')" title="Foto Pulang">` : ''}
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button onclick="openEditAttendanceModal('${x.id}')" style="background:var(--surface-subtle); color:var(--text-main); border:1px solid var(--border-light); font-size:11px; font-weight:700; border-radius:8px; padding:6px 10px;">✏️ Edit</button>
+          <button onclick="deleteAttendance('${x.id}')" style="background:#FEF2F2; color:var(--danger); border:none; font-size:11px; font-weight:700; border-radius:8px; padding:6px 10px; cursor:pointer;">Hapus</button>
         </div>
       </div>
     </div>
@@ -1486,14 +1530,18 @@ function renderAdminPermits() {
   }
 
   $("adminPermitsList").innerHTML = pendingPermits.map(p => `
-    <div class="row">
-      <div class="grow">
-        <b>${p.userName} (${p.type})</b>
-        <div class="muted">Tgl: ${p.date} • "${p.note}"</div>
+    <div class="history-card-item">
+      <div class="history-header-flex">
+        <div>
+          <div class="history-date">${p.userName}</div>
+          <div class="history-location">Tgl: ${p.date} • ${p.type}</div>
+        </div>
+        <span class="badge permit">Izin / Sakit</span>
       </div>
-      <div style="display:flex; gap:6px;">
-        <button onclick="approvePermit('${p.id}', 'Disetujui')" style="background:var(--primary-light); color:var(--primary-dark); padding:6px 12px; border-radius:8px; font-weight:700; font-size:11px;">Acc</button>
-        <button onclick="approvePermit('${p.id}', 'Ditolak')" style="background:#FEF2F2; color:var(--danger); padding:6px 12px; border-radius:8px; font-weight:700; font-size:11px;">Tolak</button>
+      <div style="font-size:12px; color:var(--text-muted); margin:8px 0; font-style:italic;">"${p.note}"</div>
+      <div style="display:flex; gap:8px; justify-content:flex-end;">
+        <button onclick="approvePermit('${p.id}', 'Disetujui')" style="background:var(--primary-light); color:var(--primary-dark); padding:6px 14px; border-radius:8px; font-weight:700; font-size:11px;">Acc</button>
+        <button onclick="approvePermit('${p.id}', 'Ditolak')" style="background:#FEF2F2; color:var(--danger); padding:6px 14px; border-radius:8px; font-weight:700; font-size:11px;">Tolak</button>
       </div>
     </div>
   `).join("");
@@ -1501,11 +1549,7 @@ function renderAdminPermits() {
 
 async function approvePermit(permitId, newStatus) {
   try {
-    const { error } = await supabaseClient
-      .from('permits')
-      .update({ status: newStatus })
-      .eq('id', permitId);
-
+    const { error } = await supabaseClient.from('permits').update({ status: newStatus }).eq('id', permitId);
     if (error) throw error;
     showToast(`Pengajuan ${newStatus.toLowerCase()}!`, "success");
     await fetchUserData();
@@ -1521,33 +1565,52 @@ function row(x){
   const dt = `${day} ${monthNames[parseInt(month, 10) - 1]} ${year}`;
 
   if (x.type && (x.type === 'Izin' || x.type === 'Sakit')) {
-    let statusBadgeClass = '';
-    if (x.status === 'Disetujui') statusBadgeClass = 'style="background:var(--primary-light); color:var(--primary-dark);"'
-    else if (x.status === 'Ditolak') statusBadgeClass = 'style="background:#FEF2F2; color:var(--danger);"'
-    else statusBadgeClass = 'class="badge late"';
+    let statusBadgeClass = 'class="badge permit"';
+    if (x.status === 'Disetujui') statusBadgeClass = 'style="background:var(--primary-light); color:var(--primary-dark);" class="badge"';
+    else if (x.status === 'Ditolak') statusBadgeClass = 'style="background:#FEF2F2; color:var(--danger);" class="badge"';
 
     return `
-      <div class="row">
-        <div class="icon-box">📝</div>
-        <div class="grow">
-          <b>${dt} — ${x.type}</b>
-          <div class="muted">Ket: "${x.note}"</div>
+      <div class="history-card-item">
+        <div class="history-header-flex">
+          <div>
+            <div class="history-date">📝 ${x.type}</div>
+            <div class="history-location">${dt}</div>
+          </div>
+          <span ${statusBadgeClass}>${x.status || 'Pending'}</span>
         </div>
-        <span class="badge" ${statusBadgeClass}>${x.status || 'Pending'}</span>
+        <div style="font-size:12px; color:var(--text-muted); margin-top:8px;">Keterangan: "${x.note}"</div>
       </div>
     `;
   }
 
-  const overtimeBadge = x.overtimeMinutes > 0 ? `<span class="badge overtime" style="margin-left:4px;">Lembur ${x.overtimeMinutes}m</span>` : '';
+  const overtimeBadge = x.overtimeMinutes > 0 ? `<span class="badge overtime">Lembur ${x.overtimeMinutes}m</span>` : '';
+  
+  const inPhotoHtml = x.inPhoto 
+    ? `<img src="${x.inPhoto}" class="thumb-img" onclick="showPhotoPreview('${x.inPhoto}')" title="Klik foto masuk">` 
+    : '';
+  const outPhotoHtml = x.outPhoto 
+    ? `<img src="${x.outPhoto}" class="thumb-img" onclick="showPhotoPreview('${x.outPhoto}')" title="Klik foto pulang">` 
+    : '';
+
   return `
-    <div class="row">
-      <div class="icon-box">📌</div>
-      <div class="grow">
-        <b>${dt}</b>
-        <div class="muted">Masuk: ${time(x.in)}${x.out?" • Pulang: "+time(x.out):""} (${x.locationName})</div>
+    <div class="history-card-item">
+      <div class="history-header-flex">
+        <div>
+          <div class="history-date">📅 ${dt}</div>
+          <div class="history-location">📍 ${x.locationName || 'Basecamp'}</div>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+          <span class="badge ${x.late ? "late" : ""}">${x.late ? "Terlambat" : "Hadir"}</span>
+          ${overtimeBadge}
+        </div>
       </div>
-      <span class="badge ${x.late?"late":""}">${x.late?"Terlambat":"Hadir"}</span>
-      ${overtimeBadge}
+      
+      <div class="time-pill-box">
+        <div>Masuk: <span class="time-pill">${time(x.in)}</span></div>
+        <div style="margin-left:auto;">Pulang: <span class="time-pill">${x.out ? time(x.out) : '--:--'}</span></div>
+      </div>
+
+      ${(inPhotoHtml || outPhotoHtml) ? `<div class="photo-preview-grid">${inPhotoHtml}${outPhotoHtml}</div>` : ''}
     </div>
   `;
 }
@@ -1557,21 +1620,18 @@ function openModal(){
   $("permitDate").setAttribute("min", key());
   $("modal").classList.add("show");
 }
-function closeModal(){$("modal").classList.remove("show")}
+function closeModal(){ $("modal").classList.remove("show"); }
 
 $("permitForm").onsubmit = async e => {
   e.preventDefault();
   const userObj = getCurrentUserObj();
-  const type = $("permitType").value;
-  const date = $("permitDate").value;
-  const note = $("permitNote").value;
 
   try {
     const { error } = await supabaseClient.from('permits').insert([{
       user_id: userObj.id,
-      type: type,
-      date: date,
-      note: note,
+      type: $("permitType").value,
+      date: $("permitDate").value,
+      note: $("permitNote").value,
       status: 'Pending'
     }]);
 
@@ -1595,23 +1655,14 @@ function closeAdminModal(){ $("adminModal").classList.remove("show"); }
 
 function switchAdminTab(tab) {
   document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
-  $("tabShift").style.display = "none";
-  $("tabUsers").style.display = "none";
-  $("tabOffices").style.display = "none";
-  $("tabRecap").style.display = "none";
+  ["tabShift", "tabUsers", "tabOffices", "tabRecap"].forEach(id => $(id).style.display = "none");
 
-  if(tab === 'shift') {
-    $("tabShift").style.display = "block";
-    $("btnTabShift").classList.add('active');
-  } else if(tab === 'users') {
-    $("tabUsers").style.display = "block";
-    $("btnTabUsers").classList.add('active');
-  } else if(tab === 'offices') {
-    $("tabOffices").style.display = "block";
-    $("btnTabOffices").classList.add('active');
-  } else if(tab === 'recap') {
-    $("tabRecap").style.display = "block";
-    $("btnTabRecap").classList.add('active');
+  const tabMap = { shift: "tabShift", users: "tabUsers", offices: "tabOffices", recap: "tabRecap" };
+  const btnMap = { shift: "btnTabShift", users: "btnTabUsers", offices: "btnTabOffices", recap: "btnTabRecap" };
+
+  if (tabMap[tab]) {
+    $(tabMap[tab]).style.display = "block";
+    $(btnMap[tab]).classList.add('active');
   }
 }
 
@@ -1625,30 +1676,34 @@ function renderAdminPanel() {
 
   $("adminUserList").innerHTML = state.users.map(u => {
     const off = getOfficeById(u.officeId);
-    return `<div class="row">
-      <div class="grow">
-        <b>${u.name} (${u.id})</b>
-        <div class="muted">${u.role} • Basecamp: <b>${off.name}</b></div>
-      </div>
-      <div style="display:flex; gap:6px;">
-        <button onclick="openEditUserModal('${u.id}')" style="background:var(--primary-light); color:var(--primary-dark); padding:6px 10px; border-radius:8px; font-weight:700; font-size:11px;">✏️ Edit</button>
-        ${u.isAdmin ? '' : `<button onclick="deleteUser('${u.id}')" style="background:#FEF2F2; color:var(--danger); padding:6px 10px; border-radius:8px; font-weight:700; font-size:11px;">🗑️ Hapus</button>`}
+    return `<div class="history-card-item">
+      <div class="history-header-flex">
+        <div>
+          <div class="history-date">${u.name} (${u.id})</div>
+          <div class="history-location">${u.role} • Basecamp: <b>${off.name}</b></div>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button onclick="openEditUserModal('${u.id}')" style="background:var(--primary-light); color:var(--primary-dark); padding:6px 10px; border-radius:8px; font-weight:700; font-size:11px;">✏️ Edit</button>
+          ${u.isAdmin ? '' : `<button onclick="deleteUser('${u.id}')" style="background:#FEF2F2; color:var(--danger); padding:6px 10px; border-radius:8px; font-weight:700; font-size:11px; border:none; cursor:pointer;">🗑️ Hapus</button>`}
+        </div>
       </div>
     </div>`;
   }).join("");
 
-  $("adminOfficeList").innerHTML = state.offices.map(o => {
-    return `<div class="row">
-      <div class="grow">
-        <b>${o.name} (${o.id})</b>
-        <div class="muted">Lat: ${o.lat}, Lng: ${o.lng} (Radius: ${o.radius}m)</div>
+  $("adminOfficeList").innerHTML = state.offices.map(o => `
+    <div class="history-card-item">
+      <div class="history-header-flex">
+        <div>
+          <div class="history-date">${o.name} (${o.id})</div>
+          <div class="history-location">Lat: ${o.lat}, Lng: ${o.lng} (Radius: ${o.radius}m)</div>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button onclick="openEditOfficeModal('${o.id}')" style="background:var(--primary-light); color:var(--primary-dark); padding:6px 10px; border-radius:8px; font-weight:700; font-size:11px;">✏️ Edit</button>
+          <button onclick="deleteOffice('${o.id}')" style="background:#FEF2F2; color:var(--danger); padding:6px 10px; border-radius:8px; font-weight:700; font-size:11px; border:none; cursor:pointer;">🗑️ Hapus</button>
+        </div>
       </div>
-      <div style="display:flex; gap:6px;">
-        <button onclick="openEditOfficeModal('${o.id}')" style="background:var(--primary-light); color:var(--primary-dark); padding:6px 10px; border-radius:8px; font-weight:700; font-size:11px;">✏️ Edit</button>
-        <button onclick="deleteOffice('${o.id}')" style="background:#FEF2F2; color:var(--danger); padding:6px 10px; border-radius:8px; font-weight:700; font-size:11px;">🗑️ Hapus</button>
-      </div>
-    </div>`;
-  }).join("");
+    </div>
+  `).join("");
 }
 
 function deleteUser(userId) {
@@ -1721,19 +1776,15 @@ $("shiftSettingsForm").onsubmit = e => {
 
 $("addUserForm").onsubmit = async e => {
   e.preventDefault();
-  const id = $("newUserId").value.trim();
-  const password = $("newUserPassword").value.trim();
-  const name = $("newUserName").value.trim();
   const role = $("newUserRole").value;
-  const officeId = $("newUserOffice").value;
 
   try {
     const { error } = await supabaseClient.from('profiles').insert([{
-      id: id,
-      password: password,
-      name: name,
+      id: $("newUserId").value.trim(),
+      password: $("newUserPassword").value.trim(),
+      name: $("newUserName").value.trim(),
       role: role,
-      office_id: officeId,
+      office_id: $("newUserOffice").value,
       is_admin: role === "Admin System"
     }]);
 
@@ -1757,18 +1808,13 @@ $("addOfficeForm").onsubmit = async e => {
   }, 0);
   const id = "OFF" + String(maxId + 1).padStart(3, '0');
 
-  const name = $("newOfficeName").value.trim();
-  const lat = parseFloat($("newOfficeLat").value);
-  const lng = parseFloat($("newOfficeLng").value);
-  const radius = parseInt($("newOfficeRadius").value);
-
   try {
     const { error } = await supabaseClient.from('offices').insert([{
       id: id,
-      name: name,
-      lat: lat,
-      lng: lng,
-      radius: radius
+      name: $("newOfficeName").value.trim(),
+      lat: parseFloat($("newOfficeLat").value),
+      lng: parseFloat($("newOfficeLng").value),
+      radius: parseInt($("newOfficeRadius").value)
     }]);
 
     if(error) throw error;
@@ -1801,15 +1847,13 @@ function openEditUserModal(userId) {
 $("editUserForm").onsubmit = async e => {
   e.preventDefault();
   const id = $("editUserId").value;
-  const name = $("editUserName").value.trim();
   const password = $("editUserPassword").value.trim();
   const role = $("editUserRole").value;
-  const officeId = $("editUserOffice").value;
 
   const updatePayload = {
-    name: name,
+    name: $("editUserName").value.trim(),
     role: role,
-    office_id: officeId,
+    office_id: $("editUserOffice").value,
     is_admin: role === "Admin System"
   };
 
@@ -1843,14 +1887,15 @@ function openEditOfficeModal(officeId) {
 
 $("editOfficeForm").onsubmit = async e => {
   e.preventDefault();
-  const id = $("editOfficeId").value;
-  const name = $("editOfficeName").value.trim();
-  const lat = parseFloat($("editOfficeLat").value);
-  const lng = parseFloat($("editOfficeLng").value);
-  const radius = parseInt($("editOfficeRadius").value);
 
   try {
-    const { error } = await supabaseClient.from('offices').update({ name, lat, lng, radius }).eq('id', id);
+    const { error } = await supabaseClient.from('offices').update({ 
+      name: $("editOfficeName").value.trim(), 
+      lat: parseFloat($("editOfficeLat").value), 
+      lng: parseFloat($("editOfficeLng").value), 
+      radius: parseInt($("editOfficeRadius").value) 
+    }).eq('id', $("editOfficeId").value);
+
     if (error) throw error;
 
     closeModalId("editOfficeModal");
@@ -1870,31 +1915,27 @@ function openEditAttendanceModal(attId) {
   $("editAttIsLate").value = att.late ? "true" : "false";
   $("editAttOvertime").value = att.overtimeMinutes || 0;
 
-  if(att.in) $("editAttTimeIn").value = formatToLocalDatetimeInput(att.in);
-  if(att.out) $("editAttTimeOut").value = formatToLocalDatetimeInput(att.out);
-  else $("editAttTimeOut").value = "";
+  $("editAttTimeIn").value = att.in ? formatToLocalDatetimeInput(att.in) : "";
+  $("editAttTimeOut").value = att.out ? formatToLocalDatetimeInput(att.out) : "";
 
   $("editAttendanceModal").classList.add("show");
 }
 
 $("editAttendanceForm").onsubmit = async e => {
   e.preventDefault();
-  const id = $("editAttId").value;
   const inVal = $("editAttTimeIn").value;
   const outVal = $("editAttTimeOut").value;
-  const isLate = $("editAttIsLate").value === "true";
-  const overtime = parseInt($("editAttOvertime").value) || 0;
 
   const updateData = {
-    is_late: isLate,
-    overtime_minutes: overtime
+    is_late: $("editAttIsLate").value === "true",
+    overtime_minutes: parseInt($("editAttOvertime").value) || 0
   };
 
   if (inVal) updateData.time_in = new Date(inVal).toISOString();
   if (outVal) updateData.time_out = new Date(outVal).toISOString();
 
   try {
-    const { error } = await supabaseClient.from('attendances').update(updateData).eq('id', id);
+    const { error } = await supabaseClient.from('attendances').update(updateData).eq('id', $("editAttId").value);
     if (error) throw error;
 
     closeModalId("editAttendanceModal");
@@ -1906,19 +1947,16 @@ $("editAttendanceForm").onsubmit = async e => {
   }
 };
 
-document.querySelectorAll(".nav-item").forEach(n=>n.onclick=()=>{
-  document.querySelectorAll(".nav-item,.page").forEach(x=>x.classList.remove("active"));
-  n.classList.add("active");
-  const targetPage = n.dataset.page;
-  $(targetPage).classList.add("active");
-  
-  state.activePage = targetPage;
-  localStorage.setItem("charlynet_active_page", targetPage);
-  
-  renderApp();
+document.querySelectorAll(".nav-item").forEach(n => {
+  n.onclick = () => {
+    const targetPage = n.dataset.page;
+    state.activePage = targetPage;
+    localStorage.setItem("charlynet_active_page", targetPage);
+    renderApp();
+  };
 });
 
-setInterval(renderClock,1000);
+setInterval(renderClock, 1000);
 renderClock();
 loadInitialData();
 </script>
